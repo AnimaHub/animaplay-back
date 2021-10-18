@@ -10,7 +10,6 @@ const tiposAuthorization = require("../services/types-authorization");
 router.post(
   "/",
   tiposAuthorization.lider_lab,
-  tiposAuthorization.admin,
   authService.authorize,
   controler.post
 );

@@ -10,7 +10,4 @@ router.post('/', controler.post);
 
 router.post('/login', controler.login);
 
-router.put('/update', controler.login);
-
-
 module.exports=router;
