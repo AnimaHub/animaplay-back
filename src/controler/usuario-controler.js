@@ -5,8 +5,11 @@ const authService = require("../services/auth-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
 const arquivos = require("./arquivos-controler");
+const dataFunctions = require("../validator/data");
+const { Op } = require("sequelize");
 
 const userTipes = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
+const addressTypes = ["fisico", "virtual", "indefinido"];
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Usuario']
@@ -152,6 +155,104 @@ exports.post = async (req, res, next) => {
     .finally(() => {
       connection.closeConnection(models.sequelize);
     });
+};
+
+exports.put = async (req, res, next) => {
+  // #swagger.tags = ['Usuario']
+  // #swagger.description = 'Endpoint para atualizar dados do usuário no sistema.'
+  // #swagger.security = [{ApiKeyAuth: []}]
+  /* #swagger.parameters['dados'] = {
+      in: 'body',
+      description: 'Dados para atualizar cadastro.',
+      required: true,
+      type: 'object',
+      schema: { 
+        nome: 'Usuario de teste atualizado',
+        email: 'teste@teste.com',
+        senha: 'oloco',
+        telefone: '11 99999-9999',
+        tipo_usuario: 'admin',
+        endereco: {
+          cep: '65603-710',
+          rua: 'Avenida das Andorinhas',
+          bairro: 'Raiz',
+          numero: '298',
+          cidade: 'Caxias',
+          estado: 'MA',
+          tipo: 'fisico'
+        }
+      }
+    } 
+  */
+
+  const models = connection.initModels();
+  
+  const userTypes = {
+    admin: { model: models.admin, as: "admins" },
+    aluno: { model: models.aluno, as: "alunos" },
+    orientador: { model: models.orientador, as: "orientadors"},
+    lider_lab: { model: models.lider_lab, as: "lider_labs" },
+    parceiro: { model: models.parceiro, as: "parceiros" },
+  };
+  
+  try{
+
+    const dataValidator = new validator();
+    let userid =  req.body.jwtDecodeDados.id_usuario;
+
+    dataValidator.isRequired(req.body.nome, "Campo `nome` é obrigatorio!");
+    dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
+    dataValidator.isRequired(req.body.tipo_usuario,"Campo `tipo_usuario` é obrigatorio!");
+  
+    dataValidator.isEmail(req.body.email, "O `email` é invalido");
+    dataValidator.includeIn(req.body.tipo_usuario, userTipes, "Campo `tipo_usuario` é invalido");
+  
+    if (req.body.endereco) {
+      dataValidator.isRequired(req.body.endereco.tipo, "Campo `tipo` é obrigatorio!");
+      dataValidator.includeIn(req.body.endereco.tipo, addressTypes, "Campo `endereco.tipo` é invalido");
+    }
+  
+    if (!dataValidator.isValid()) {
+      res.status(400).send(dataValidator.errors()).end();
+    }
+
+    let emailExist = await models.usuario.findOne({
+      include: {
+        ...userTypes[req.body.tipo_usuario],
+      },
+      where: { 
+        [Op.and]: [{ email: req.body.email}, 
+                    { id_usuario: { [Op.not]: userid} }], 
+      }
+    });
+    
+    if (emailExist) {
+      res.status(400).send({ message: "E-mail ja cadastrado!" }).end();
+      connection.closeConnection(models.sequelize);
+    }
+
+    // Inicia busca para atualizar
+    let usuario = await models.usuario.findOne({
+      where: { id_usuario : userid }
+    });
+
+    let endereco_usuario = await models.endereco.findOne({
+      where: { id_endereco : usuario.endereco_id_endereco }
+    });
+
+    req.body.telefone = dataFunctions.RemoveNotNumberDigits(req.body.telefone);
+
+    await endereco_usuario.update(req.body.endereco);
+    await usuario.update(req.body);
+    
+    res.status(200).send({ message: "Usuario atualizado com sucesso"});
+
+  }catch(err){
+    res.status(500).send({message: err.message});
+  }finally{
+    connection.closeConnection(models.sequelize);
+    return;
+  }
 };
 
 exports.login = async (req, res, next) => {

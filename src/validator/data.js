@@ -12,4 +12,8 @@ dataFunctions.ConvertDataUStoBR = (data)=>{
     return moment(data, 'YYYY-MM-DD').format('DD/MM/YYYY');
 }
 
+dataFunctions.RemoveNotNumberDigits = (data)=>{
+    return data.replace(/\D/g,'');
+}
+
 module.exports = dataFunctions;
