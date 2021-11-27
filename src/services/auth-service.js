@@ -1,8 +1,8 @@
 "use strict";
 const jwt = require("jsonwebtoken");
 
-exports.generateToken = async (data) => {
-  return jwt.sign(data, process.env.KEY_SERVE, { expiresIn: "1d" });
+exports.generateToken = async (data, customExpiration = "1d") => {
+  return jwt.sign(data, process.env.KEY_SERVE, { expiresIn: customExpiration });
 };
 
 exports.decodeToken = async (token) => {

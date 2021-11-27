@@ -1,7 +1,8 @@
 "use strict";
 
-const validator = require("../validator/vaalidator");
+const validator = require("../validator/validator");
 const authService = require("../services/auth-service");
+const mailService = require("../services/mail-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
 const arquivos = require("./arquivos-controler");
@@ -186,32 +187,45 @@ exports.put = async (req, res, next) => {
   */
 
   const models = connection.initModels();
-  
+
   const userTypes = {
     admin: { model: models.admin, as: "admins" },
     aluno: { model: models.aluno, as: "alunos" },
-    orientador: { model: models.orientador, as: "orientadors"},
+    orientador: { model: models.orientador, as: "orientadors" },
     lider_lab: { model: models.lider_lab, as: "lider_labs" },
     parceiro: { model: models.parceiro, as: "parceiros" },
   };
-  
-  try{
 
+  try {
     const dataValidator = new validator();
-    let userid =  req.body.jwtDecodeDados.id_usuario;
+    let userid = req.body.jwtDecodeDados.id_usuario;
 
     dataValidator.isRequired(req.body.nome, "Campo `nome` é obrigatorio!");
     dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
-    dataValidator.isRequired(req.body.tipo_usuario,"Campo `tipo_usuario` é obrigatorio!");
-  
+    dataValidator.isRequired(
+      req.body.tipo_usuario,
+      "Campo `tipo_usuario` é obrigatorio!"
+    );
+
     dataValidator.isEmail(req.body.email, "O `email` é invalido");
-    dataValidator.includeIn(req.body.tipo_usuario, userTipes, "Campo `tipo_usuario` é invalido");
-  
+    dataValidator.includeIn(
+      req.body.tipo_usuario,
+      userTipes,
+      "Campo `tipo_usuario` é invalido"
+    );
+
     if (req.body.endereco) {
-      dataValidator.isRequired(req.body.endereco.tipo, "Campo `tipo` é obrigatorio!");
-      dataValidator.includeIn(req.body.endereco.tipo, addressTypes, "Campo `endereco.tipo` é invalido");
+      dataValidator.isRequired(
+        req.body.endereco.tipo,
+        "Campo `tipo` é obrigatorio!"
+      );
+      dataValidator.includeIn(
+        req.body.endereco.tipo,
+        addressTypes,
+        "Campo `endereco.tipo` é invalido"
+      );
     }
-  
+
     if (!dataValidator.isValid()) {
       res.status(400).send(dataValidator.errors()).end();
     }
@@ -220,12 +234,14 @@ exports.put = async (req, res, next) => {
       include: {
         ...userTypes[req.body.tipo_usuario],
       },
-      where: { 
-        [Op.and]: [{ email: req.body.email}, 
-                    { id_usuario: { [Op.not]: userid} }], 
-      }
+      where: {
+        [Op.and]: [
+          { email: req.body.email },
+          { id_usuario: { [Op.not]: userid } },
+        ],
+      },
     });
-    
+
     if (emailExist) {
       res.status(400).send({ message: "E-mail ja cadastrado!" }).end();
       connection.closeConnection(models.sequelize);
@@ -233,23 +249,22 @@ exports.put = async (req, res, next) => {
 
     // Inicia busca para atualizar
     let usuario = await models.usuario.findOne({
-      where: { id_usuario : userid }
+      where: { id_usuario: userid },
     });
 
     let endereco_usuario = await models.endereco.findOne({
-      where: { id_endereco : usuario.endereco_id_endereco }
+      where: { id_endereco: usuario.endereco_id_endereco },
     });
 
     req.body.telefone = dataFunctions.RemoveNotNumberDigits(req.body.telefone);
 
     await endereco_usuario.update(req.body.endereco);
     await usuario.update(req.body);
-    
-    res.status(200).send({ message: "Usuario atualizado com sucesso"});
 
-  }catch(err){
-    res.status(500).send({message: err.message});
-  }finally{
+    res.status(200).send({ message: "Usuario atualizado com sucesso" });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  } finally {
     connection.closeConnection(models.sequelize);
     return;
   }
@@ -313,17 +328,17 @@ exports.login = async (req, res, next) => {
 
       let tipo_usuario = undefined;
 
-      if(response.admins[0]){
-        tipo_usuario= "admin"
-      }else if(response.alunos[0]){
-        tipo_usuario= "aluno"
-      }else if(response.orientadors[0]){
-        tipo_usuario= "orientador"
-      }else if(response.lider_labs[0]){
-        tipo_usuario= "lider_lab"
-      }else if(response.parceiros[0]){
-        tipo_usuario= "parceiro"
-      }else{
+      if (response.admins[0]) {
+        tipo_usuario = "admin";
+      } else if (response.alunos[0]) {
+        tipo_usuario = "aluno";
+      } else if (response.orientadors[0]) {
+        tipo_usuario = "orientador";
+      } else if (response.lider_labs[0]) {
+        tipo_usuario = "lider_lab";
+      } else if (response.parceiros[0]) {
+        tipo_usuario = "parceiro";
+      } else {
         res
           .status(400)
           .send({
@@ -332,7 +347,7 @@ exports.login = async (req, res, next) => {
           .end();
         return;
       }
-      
+
       let dadosUsuario = {
         id_usuario: response.id_usuario,
         nome: response.nome,
@@ -340,9 +355,7 @@ exports.login = async (req, res, next) => {
       };
 
       dadosUsuario["id_" + tipo_usuario] =
-        response[tipo_usuario + 's'][0][
-          "id_" + tipo_usuario
-        ];
+        response[tipo_usuario + "s"][0]["id_" + tipo_usuario];
 
       let jwt = await authService.generateToken(dadosUsuario);
 
@@ -355,7 +368,165 @@ exports.login = async (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("ERRO: ",err)
+      console.log("ERRO: ", err);
+      res.status(500).send(JSON.stringify(err?.sqlMessage));
+    })
+    .finally(() => {
+      connection.closeConnection(models.sequelize);
+    });
+};
+
+exports.sendMailToResetPassword = async (req, res, next) => {
+  // #swagger.tags = ['Usuario']
+  // #swagger.description = 'Endpoint para envio de email com link para criação de nova senha.'
+  /* #swagger.parameters['email'] = {
+      in: 'body',
+      description: 'Email para recuperação de conta.',
+      required: true,
+      type: 'object',
+      schema: { 
+        email: 'teste@teste.com',
+      }
+    } 
+  */
+  let dataValidator = new validator();
+
+  dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
+  dataValidator.isEmail(req.body.email, "O `email` é invalido");
+
+  if (!dataValidator.isValid()) {
+    res.status(400).send(dataValidator.errors()).end();
+    return;
+  }
+
+  const models = connection.initModels();
+
+  models.usuario
+    .findOne({
+      include: [
+        { model: models.admin, as: "admins" },
+        { model: models.aluno, as: "alunos" },
+        { model: models.orientador, as: "orientadors" },
+        { model: models.lider_lab, as: "lider_labs" },
+        { model: models.parceiro, as: "parceiros" },
+      ],
+      where: {
+        email: req.body.email,
+      },
+    })
+    .then(async (response) => {
+      if (!response) {
+        res
+          .status(400)
+          .send({
+            message: "Usuário não encontrado",
+          })
+          .end();
+        return;
+      }
+
+      let tipo_usuario = undefined;
+
+      if (response.admins[0]) {
+        tipo_usuario = "admin";
+      } else if (response.alunos[0]) {
+        tipo_usuario = "aluno";
+      } else if (response.orientadors[0]) {
+        tipo_usuario = "orientador";
+      } else if (response.lider_labs[0]) {
+        tipo_usuario = "lider_lab";
+      } else if (response.parceiros[0]) {
+        tipo_usuario = "parceiro";
+      } else {
+        res
+          .status(400)
+          .send({
+            message: "Email ou Senha invalidos.",
+          })
+          .end();
+        return;
+      }
+
+      let userResponse = {
+        id_usuario: response.id_usuario,
+        tipo_usuario: tipo_usuario,
+      };
+
+      userResponse["id_" + tipo_usuario] =
+        response[tipo_usuario + "s"][0]["id_" + tipo_usuario];
+
+      let jwt = await authService.generateToken(userResponse, "1h");
+
+      await mailService.sendRecoveryPasswordMail(response.email, jwt);
+
+      res.status(200).send({
+        message: "Email enviado com suscesso",
+      });
+    })
+    .catch((err) => {
+      console.log("ERRO: ", err);
+      res.status(500).send(JSON.stringify(err?.sqlMessage));
+    })
+    .finally(() => {
+      connection.closeConnection(models.sequelize);
+    });
+};
+
+exports.updatePassword = async (req, res, next) => {
+  // #swagger.tags = ['Usuario']
+  // #swagger.description = 'Endpoint para atualização de senha na plataforma.'
+  // #swagger.security = [{ApiKeyAuth: []}]
+  /* #swagger.parameters['senha'] = {
+      in: 'body',
+      description: 'Nova senha escolhida para uso na plataforma.',
+      required: true,
+      type: 'object',
+      schema: { 
+        senha: 'novaSenha',
+      }
+    } 
+  */
+  let dataValidator = new validator();
+  let userid = req.body.jwtDecodeDados.id_usuario;
+
+  dataValidator.isRequired(req.body.senha, "Campo `senha` é obrigatorio!");
+
+  if (!dataValidator.isValid()) {
+    res.status(400).send(dataValidator.errors()).end();
+    return;
+  }
+
+  let new_pass = md5(req.body.senha + process.env.KEY_SERVE);
+
+  const models = connection.initModels();
+
+  await models.usuario
+    .findOne({
+      where: {
+        id_usuario: userid,
+      },
+    })
+    .then(async (userResponse) => {
+      if (!userResponse) {
+        res
+          .status(400)
+          .send({
+            message: "Usuário não encontrado",
+          })
+          .end();
+        return;
+      }
+
+      await userResponse.update({
+        senha: new_pass,
+      });
+
+      res.status(200).send({
+        message: "Senha atualizada com suscesso",
+      });
+    })
+    .catch((err) => {
+      console.log("ERRO: ", err);
       res.status(500).send(JSON.stringify(err?.sqlMessage));
     })
     .finally(() => {

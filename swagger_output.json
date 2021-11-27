@@ -252,6 +252,90 @@
         }
       }
     },
+    "/usuario/password/recovery": {
+      "post": {
+        "tags": [
+          "Usuario"
+        ],
+        "description": "Endpoint para envio de email com link para criação de nova senha.",
+        "produces": [],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "description": "Email para recuperação de conta.",
+            "required": true,
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "teste@teste.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/usuario/password/new": {
+      "put": {
+        "tags": [
+          "Usuario"
+        ],
+        "description": "Endpoint para atualização senha na plataforma.",
+        "produces": [],
+        "parameters": [
+          {
+            "name": "senha",
+            "in": "body",
+            "description": "Nova senha escolhida para uso na plataforma.",
+            "required": true,
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "senha": {
+                  "type": "string",
+                  "example": "novaSenha"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/laboratorio\r/": {
       "post": {
         "tags": [

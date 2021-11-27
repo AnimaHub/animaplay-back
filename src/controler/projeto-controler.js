@@ -1,6 +1,6 @@
 "use strict";
 
-const validator = require("../validator/vaalidator");
+const validator = require("../validator/validator");
 const authService = require("../services/auth-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
