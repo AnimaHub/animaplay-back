@@ -295,7 +295,7 @@
         "tags": [
           "Usuario"
         ],
-        "description": "Endpoint para atualização senha na plataforma.",
+        "description": "Endpoint para atualização de senha na plataforma.",
         "produces": [],
         "parameters": [
           {
