@@ -2,17 +2,17 @@ require("dotenv").config(); // this is important!
 
 module.exports = {
   development: {
-    username: "root",
-    password: null,
-    database: "animaflix",
-    host: "localhost",
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_URL,
     dialect: "mysql",
     logging: console.log
   },
   test: {
     username: "root",
     password: null,
-    database: "animaflix",
+    database: "animaplay",
     host: "localhost",
     dialect: "mysql",
     logging: false
@@ -20,7 +20,7 @@ module.exports = {
   production: {
     username: "root",
     password: null,
-    database: "animaflix",
+    database: "animaplay",
     host: "localhost",
     dialect: "mysql",
     logging: false
