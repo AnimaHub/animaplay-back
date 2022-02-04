@@ -456,12 +456,17 @@ exports.sendMailToResetPassword = async (req, res, next) => {
         response[tipo_usuario + "s"][0]["id_" + tipo_usuario];
 
       let jwt = await authService.generateToken(userResponse, "1h");
-
-      await mailService.sendRecoveryPasswordMail(response.email, jwt);
-
-      res.status(200).send({
-        message: "Email enviado com suscesso",
-      });
+      const result = await mailService.sendRecoveryPasswordMail(response.email, jwt);
+      
+      if (result) {
+        res.status(200).send({
+          message: "Email enviado com suscesso",
+        });
+      } else {
+        res.status(500).send({
+          message: "Falha ao enviar e-mail de recuperação",
+        });
+      }
     })
     .catch((err) => {
       console.log("ERRO: ", err);
