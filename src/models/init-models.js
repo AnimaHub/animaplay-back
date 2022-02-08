@@ -22,7 +22,7 @@ var _parceiro_has_projetos = require("./parceiro_has_projetos");
 var _projeto = require("./projeto");
 var _usuario = require("./usuario");
 
-function initModels() {
+const initModels = () => {
   const sequelize = new Sequelize(config[process.env.NODE_ENV]);
 
   var admin = _admin(sequelize, DataTypes);
@@ -132,7 +132,7 @@ function initModels() {
   };
 }
 
-async function closeConnection(coonection){
+const closeConnection = async (coonection) => {
   await coonection ? coonection.close() : undefined;
 }
 

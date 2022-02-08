@@ -1,19 +1,18 @@
 "use strict";
-const express = require("express");
 const moment = require("moment");
 
-const dataFunctions = [];
+const dataFormatter = [];
 
-dataFunctions.ConvertDataBRtoUS = (data) => {
+dataFormatter.ConvertDataBRtoUS = (data) => {
   return moment(data, "DD/MM/YYYY").format("YYYY-MM-DD");
 };
 
-dataFunctions.ConvertDataUStoBR = (data) => {
+dataFormatter.ConvertDataUStoBR = (data) => {
   return moment(data, "YYYY-MM-DD").format("DD/MM/YYYY");
 };
 
-dataFunctions.RemoveNotNumberDigits = (data) => {
+dataFormatter.RemoveNotNumberDigits = (data) => {
   return data.replace(/\D/g, "");
 };
 
-module.exports = dataFunctions;
+module.exports = dataFormatter;

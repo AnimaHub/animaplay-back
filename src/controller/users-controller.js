@@ -6,7 +6,7 @@ const mailService = require("../services/mail-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
 const files = require("./files-controller");
-const dataFunctions = require("../validator/data");
+const dataFormatter = require("../validator/data");
 const { Op } = require("sequelize");
 
 const USER_TYPES = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
@@ -255,7 +255,7 @@ exports.put = async (req, res, next) => {
       where: { id_endereco: usuario.endereco_id_endereco },
     });
 
-    req.body.telefone = dataFunctions.RemoveNotNumberDigits(req.body.telefone);
+    req.body.telefone = dataFormatter.RemoveNotNumberDigits(req.body.telefone);
 
     await endereco_usuario.update(req.body.endereco);
     await usuario.update(req.body);

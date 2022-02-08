@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('arquivos_has_projetos', {
     arquivo_id_arquivo: {
       type: DataTypes.UUID,

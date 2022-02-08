@@ -10,7 +10,7 @@ exports.decodeToken = async (token) => {
   return data;
 };
 
-exports.authorize = function (req, res, next) {
+exports.authorize = async (req, res, next) => {
   var token = req.headers["x-access-token"];
 
   if (!token || !req.authorization_type) {
@@ -18,7 +18,7 @@ exports.authorize = function (req, res, next) {
       message: "Acesso Restrito",
     });
   } else {
-    jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
+    jwt.verify(token, process.env.KEY_SERVE, (error, decoded) => {
       if (
         error ||
         decoded.id_usuario === undefined ||
@@ -36,7 +36,7 @@ exports.authorize = function (req, res, next) {
   }
 };
 
-exports.verifyGuard = function (req, res, next) {
+exports.verifyGuard = (req, res, next) => {
   // #swagger.tags = ['Token']
   // #swagger.summary = 'Validate a previous generated token.'
   // #swagger.security = [{ApiKeyAuth: []}]
@@ -48,7 +48,7 @@ exports.verifyGuard = function (req, res, next) {
       message: "Acesso Restrito",
     });
   } else {
-    jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
+    jwt.verify(token, process.env.KEY_SERVE, (error, decoded) => {
       if (
         error ||
         !req.params.tipo_usuario ||
