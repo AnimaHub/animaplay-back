@@ -1,36 +1,41 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-const salvarArquivo = (file, rota) => {
+const saveFile = (_file, route) => {
   let arquivo_id = uuidv4();
 
-  file.mv(
-    "assets/uploads/" + rota + "/" + arquivo_id + "." + file.name.split(".")[1]
+  _file.mv(
+    "assets/uploads/" +
+      route +
+      "/" +
+      arquivo_id +
+      "." +
+      _file.name.split(".")[1]
   );
 
   return {
     id_arquivo: arquivo_id,
-    nome: file.name,
-    extencao: file.mimetype,
+    nome: _file.name,
+    extencao: _file.mimetype,
     caminho:
       "assets/uploads/" +
-      rota +
+      route +
       "/" +
       arquivo_id +
       "." +
-      file.name.split(".")[1],
+      _file.name.split(".")[1],
     data_modificacao: moment().format("YYYY-MM-DD"),
   };
 };
 
-exports.SalvarArquivo = salvarArquivo;
+exports.saveFile = saveFile;
 
-exports.SalvarArquivos = (files, rota) => {
-  const arquivos = [];
+exports.saveFiles = (_files, route) => {
+  const files = [];
 
-  Object.values(files).forEach((element) => {
-    arquivos.push(salvarArquivo(element, rota));
+  Object.values(_files).forEach((element) => {
+    files.push(saveFile(element, route));
   });
 
-  return arquivos;
+  return files;
 };

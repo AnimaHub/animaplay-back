@@ -27,7 +27,6 @@ exports.sendRecoveryPasswordMail = async (email, generatedToken) => {
 
     console.log(`email to recovery pass sent sucessfully to ${email}`);
     return true;
-
   } catch (error) {
     console.log(`email to recovery pass not sent to ${email}`, error);
     return false;

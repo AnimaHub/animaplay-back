@@ -15,11 +15,11 @@ const status_projeto = [
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Events']
-  // #swagger.description = 'Endpoint para cadastrar Evento no sistema.'
+  // #swagger.summary = 'Register a new academic event.'
   // #swagger.security = [{ApiKeyAuth: []}]
-  /* #swagger.parameters['dados'] = {
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Informações para login usuário.',
+      description: 'Event information',
       required: true,
       type: 'object',
       schema: { 
@@ -47,7 +47,6 @@ exports.post = async (req, res, next) => {
   req.body.endereco_id_endereco_endereco = req.body.endereco;
   req.body.lider_lab_id_lider_lab = req.body.jwtDecodeDados?.id_lider_lab;
 
-  // Criptografando Senha
   const models = connection.initModels();
 
   models.projeto
@@ -60,8 +59,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(200).send({
-        message: "Projetos cadastrado com sucesso",
+      res.status(201).send({
         dados: {
           projeto: response,
         },

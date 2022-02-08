@@ -7,7 +7,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_URL,
     dialect: "mysql",
-    logging: console.log
+    logging: console.log,
   },
   test: {
     username: "root",
@@ -15,7 +15,7 @@ module.exports = {
     database: "animaplay",
     host: "localhost",
     dialect: "mysql",
-    logging: false
+    logging: false,
   },
   production: {
     username: "root",
@@ -23,6 +23,6 @@ module.exports = {
     database: "animaplay",
     host: "localhost",
     dialect: "mysql",
-    logging: false
-  }
+    logging: false,
+  },
 };

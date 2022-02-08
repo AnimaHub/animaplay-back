@@ -5,16 +5,16 @@ const authService = require("../services/auth-service");
 const mailService = require("../services/mail-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
-const arquivos = require("./files-controller");
+const files = require("./files-controller");
 const dataFunctions = require("../validator/data");
 const { Op } = require("sequelize");
 
-const userTipes = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
-const addressTypes = ["fisico", "virtual", "indefinido"];
+const USER_TYPES = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
+const ADDRESS_TYPE = ["fisico", "virtual", "indefinido"];
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Users']
-  // #swagger.summary = 'Insert new user into database'
+  // #swagger.summary = 'Insert new user into database.'
   /* #swagger.parameters['body'] = {
       in: 'body',
       description: 'User object that needs to be added to the system',
@@ -54,7 +54,7 @@ exports.post = async (req, res, next) => {
 
   dataValidator.includeIn(
     req.body.tipo_usuario,
-    userTipes,
+    USER_TYPES,
     "Campo `tipo_usuario` é invalido"
   );
 
@@ -109,7 +109,7 @@ exports.post = async (req, res, next) => {
   }
   // Inserindo objeto arquivo
   if (req.files?.arquivo) {
-    req.body.arquivo_id_arquivo_arquivo = await arquivos.SalvarArquivo(
+    req.body.arquivo_id_arquivo_arquivo = await files.saveFile(
       req.files.arquivo,
       "usuario"
     );
@@ -143,8 +143,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(200).send({
-        message: "Usuario encontrado com sucesso",
+      res.status(201).send({
         dados: {
           usuario: response,
         },
@@ -160,7 +159,7 @@ exports.post = async (req, res, next) => {
 
 exports.put = async (req, res, next) => {
   // #swagger.tags = ['Users']
-  // #swagger.summary = 'Update data for an existing user'
+  // #swagger.summary = 'Update data for an existing user.'
   // #swagger.security = [{ApiKeyAuth: []}]
   /* #swagger.parameters['body'] = {
       in: 'body',
@@ -210,7 +209,7 @@ exports.put = async (req, res, next) => {
     dataValidator.isEmail(req.body.email, "O `email` é invalido");
     dataValidator.includeIn(
       req.body.tipo_usuario,
-      userTipes,
+      USER_TYPES,
       "Campo `tipo_usuario` é invalido"
     );
 
@@ -221,7 +220,7 @@ exports.put = async (req, res, next) => {
       );
       dataValidator.includeIn(
         req.body.endereco.tipo,
-        addressTypes,
+        ADDRESS_TYPE,
         "Campo `endereco.tipo` é invalido"
       );
     }
@@ -261,7 +260,7 @@ exports.put = async (req, res, next) => {
     await endereco_usuario.update(req.body.endereco);
     await usuario.update(req.body);
 
-    res.status(200).send({ message: "Usuario atualizado com sucesso" });
+    res.status(200).send();
   } catch (err) {
     res.status(500).send({ message: err.message });
   } finally {
@@ -272,7 +271,7 @@ exports.put = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   // #swagger.tags = ['Users']
-  // #swagger.summary = 'Generate access token with user credentials '
+  // #swagger.summary = 'Generate access token with user credentials.'
   /* #swagger.parameters['body'] = {
       in: 'body',
       description: 'Access credentials.',
@@ -360,7 +359,6 @@ exports.login = async (req, res, next) => {
       let jwt = await authService.generateToken(dadosUsuario);
 
       res.status(200).send({
-        message: "Usuario encontrado com sucesso",
         dados: {
           jwt: jwt,
           usuario: dadosUsuario,
@@ -456,12 +454,13 @@ exports.sendMailToResetPassword = async (req, res, next) => {
         response[tipo_usuario + "s"][0]["id_" + tipo_usuario];
 
       let jwt = await authService.generateToken(userResponse, "1h");
-      const result = await mailService.sendRecoveryPasswordMail(response.email, jwt);
-      
+      const result = await mailService.sendRecoveryPasswordMail(
+        response.email,
+        jwt
+      );
+
       if (result) {
-        res.status(200).send({
-          message: "Email enviado com sucesso",
-        });
+        res.status(200).send();
       } else {
         res.status(500).send({
           message: "Falha ao enviar e-mail de recuperação",
@@ -479,7 +478,7 @@ exports.sendMailToResetPassword = async (req, res, next) => {
 
 exports.updatePassword = async (req, res, next) => {
   // #swagger.tags = ['Users']
-  // #swagger.summary = 'Update a users password with an emailed token.'
+  // #swagger.summary = 'Update an users password with an emailed token.'
   // #swagger.security = [{ApiKeyAuth: []}]
   /* #swagger.parameters['body'] = {
       in: 'body',
@@ -526,9 +525,7 @@ exports.updatePassword = async (req, res, next) => {
         senha: new_pass,
       });
 
-      res.status(200).send({
-        message: "Senha atualizada com sucesso",
-      });
+      res.status(200).send();
     })
     .catch((err) => {
       console.log("ERRO: ", err);

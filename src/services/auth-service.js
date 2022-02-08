@@ -19,8 +19,12 @@ exports.authorize = function (req, res, next) {
     });
   } else {
     jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
-
-      if (error || decoded.id_usuario === undefined || !decoded.tipo_usuario ||!req.authorization_type.includes(decoded.tipo_usuario)) {
+      if (
+        error ||
+        decoded.id_usuario === undefined ||
+        !decoded.tipo_usuario ||
+        !req.authorization_type.includes(decoded.tipo_usuario)
+      ) {
         res.status(401).json({
           message: "Token inválido para rota",
         });
@@ -34,6 +38,7 @@ exports.authorize = function (req, res, next) {
 
 exports.verifyGuard = function (req, res, next) {
   // #swagger.tags = ['Token']
+  // #swagger.summary = 'Validate a previous generated token.'
   // #swagger.security = [{ApiKeyAuth: []}]
 
   var token = req.headers["x-access-token"];

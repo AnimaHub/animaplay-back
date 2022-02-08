@@ -5,7 +5,7 @@ const authService = require("../services/auth-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
 const data = require("../validator/data");
-const arquivos = require("./files-controller");
+const files = require("./files-controller");
 
 const categoria = ["extensao", "iniciacao_cientifica"];
 const status_projeto = [
@@ -17,11 +17,11 @@ const status_projeto = [
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Projects']
-  // #swagger.description = 'Endpoint para cadastrar Projetos no sistema.'
+  // #swagger.summary = 'Register a new academic project.'
   // #swagger.security = [{ApiKeyAuth: []}]
-  /* #swagger.parameters['dados'] = {
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Informações para login usuário.',
+      description: 'Project information',
       required: true,
       type: 'object',
       schema: { 
@@ -53,9 +53,9 @@ exports.post = async (req, res, next) => {
   if (req.files) {
     req.body.arquivos_has_projetos = [];
 
-    const arquivosList = await arquivos.SalvarArquivos(req.files, "projeto");
+    const filesList = await files.saveFiles(req.files, "projeto");
 
-    arquivosList.forEach((element) => {
+    filesList.forEach((element) => {
       req.body.arquivos_has_projetos.push({
         arquivo_id_arquivo_arquivo: element,
       });
@@ -88,8 +88,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(200).send({
-        message: "Projetos cadastrado com sucesso",
+      res.status(201).send({
         dados: {
           projeto: response,
         },
@@ -105,7 +104,7 @@ exports.post = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   // #swagger.tags = ['Projects']
-  // #swagger.description = 'Endpoint para listar Projetos do sistema.'
+  // #swagger.summary = 'Get a list of registered projects.'
 
   const models = connection.initModels();
 
@@ -124,7 +123,6 @@ exports.getAll = async (req, res, next) => {
     })
     .then(async (response) => {
       res.status(200).send({
-        message: "Projeto encontrados com sucesso",
         dados: {
           laboratorio: response,
         },

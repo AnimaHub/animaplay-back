@@ -1,19 +1,19 @@
-'use strict';
-const express = require('express');
-const moment = require('moment');
+"use strict";
+const express = require("express");
+const moment = require("moment");
 
 const dataFunctions = [];
 
-dataFunctions.ConvertDataBRtoUS = (data)=>{
-    return moment(data, 'DD/MM/YYYY').format('YYYY-MM-DD');
-}
+dataFunctions.ConvertDataBRtoUS = (data) => {
+  return moment(data, "DD/MM/YYYY").format("YYYY-MM-DD");
+};
 
-dataFunctions.ConvertDataUStoBR = (data)=>{
-    return moment(data, 'YYYY-MM-DD').format('DD/MM/YYYY');
-}
+dataFunctions.ConvertDataUStoBR = (data) => {
+  return moment(data, "YYYY-MM-DD").format("DD/MM/YYYY");
+};
 
-dataFunctions.RemoveNotNumberDigits = (data)=>{
-    return data.replace(/\D/g,'');
-}
+dataFunctions.RemoveNotNumberDigits = (data) => {
+  return data.replace(/\D/g, "");
+};
 
 module.exports = dataFunctions;

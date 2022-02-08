@@ -4,16 +4,16 @@ const validator = require("../validator/validator");
 const authService = require("../services/auth-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
-const arquivos = require("./files-controller");
+const files = require("./files-controller");
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Laboratories']
-  // #swagger.description = 'Endpoint para cadastrar Laboratorios no sistema.'
+  // #swagger.summary = 'Register new thematic laboratory.'
   // #swagger.security = [{ApiKeyAuth: []}]
 
-  /* #swagger.parameters['dados'] = {
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Informações para cadastrar laboratorio.',
+      description: 'Laboratory registration information.',
       required: true,
       type: 'object',
       schema: { 
@@ -34,12 +34,12 @@ exports.post = async (req, res, next) => {
     }
   */
 
-  if(req.body.dadosJSON){
+  if (req.body.dadosJSON) {
     req.body = Object.assign({}, req.body, JSON.parse(req.body.dadosJSON));
   }
 
   if (req?.files?.arquivo) {
-    req.body.arquivo_id_arquivo_arquivo = await arquivos.SalvarArquivo(
+    req.body.arquivo_id_arquivo_arquivo = await files.saveFile(
       req.files.arquivo,
       "laboratorio"
     );
@@ -65,8 +65,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(200).send({
-        message: "Laboratorio cadastrado com sucesso",
+      res.status(201).send({
         dados: {
           laboratorio: response,
         },
@@ -82,7 +81,7 @@ exports.post = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   // #swagger.tags = ['Laboratories']
-  // #swagger.description = 'Endpoint para listar Laboratorios do sistema.'
+  // #swagger.summary = 'Get a list of registered laboratories.'
 
   const models = connection.initModels();
 
@@ -105,7 +104,6 @@ exports.getAll = async (req, res, next) => {
     })
     .then(async (response) => {
       res.status(200).send({
-        message: "Laboratorio encontrados com sucesso",
         dados: {
           laboratorio: response,
         },
