@@ -2,17 +2,17 @@
 
 const express = require("express");
 const router = express.Router();
-const controler = require("../controler/projeto-controler");
+const controller = require("../controller/projects-controller");
 const authService = require("../services/auth-service");
-const tiposAuthorization = require("../services/types-authorization");
+const AUTHORIZATION_TYPES = require("../services/authorization-types");
 
 // CRUD
 router.post(
   "/",
-  tiposAuthorization.lider_lab,
+  AUTHORIZATION_TYPES.lider_lab,
   authService.authorize,
-  controler.post
+  controller.post
 );
-router.get("/", controler.getAll);
+router.get("/", controller.getAll);
 
 module.exports = router;

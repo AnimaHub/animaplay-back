@@ -13,14 +13,14 @@ exports.decodeToken = async (token) => {
 exports.authorize = function (req, res, next) {
   var token = req.headers["x-access-token"];
 
-  if (!token || !req.TipeAuthorization) {
+  if (!token || !req.authorization_type) {
     res.status(401).json({
       message: "Acesso Restrito",
     });
   } else {
     jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
 
-      if (error || decoded.id_usuario === undefined || !decoded.tipo_usuario ||!req.TipeAuthorization.includes(decoded.tipo_usuario)) {
+      if (error || decoded.id_usuario === undefined || !decoded.tipo_usuario ||!req.authorization_type.includes(decoded.tipo_usuario)) {
         res.status(401).json({
           message: "Token inválido para rota",
         });

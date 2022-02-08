@@ -4,22 +4,34 @@ const validator = require("../validator/validator");
 const authService = require("../services/auth-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
-const arquivos = require("./arquivos-controler");
+const data = require("../validator/data");
+const arquivos = require("./files-controller");
+
+const categoria = ["extensao", "iniciacao_cientifica"];
+const status_projeto = [
+  "aguardando_publicacao",
+  "aberto",
+  "encerrado",
+  "cancelado",
+];
 
 exports.post = async (req, res, next) => {
-  // #swagger.tags = ['Laboratorios']
-  // #swagger.description = 'Endpoint para cadastrar Laboratorios no sistema.'
+  // #swagger.tags = ['Projects']
+  // #swagger.description = 'Endpoint para cadastrar Projetos no sistema.'
   // #swagger.security = [{ApiKeyAuth: []}]
-
   /* #swagger.parameters['dados'] = {
       in: 'body',
-      description: 'Informações para cadastrar laboratorio.',
+      description: 'Informações para login usuário.',
       required: true,
       type: 'object',
       schema: { 
-        nome: 'Usuario de teste',
-        email: 'teste@teste.com',
-        telefone: '31 99566-8243',
+        nome: 'Projeto de teste',
+        data_inicial: '14/09/2021',
+        data_final: '14/12/2021',
+        descricao: 'Projeto descricao',
+        categoria: 'extensao',
+        carga_horaria: 125,
+        status_projeto: 'aguardando_publicacao',
         endereco: {
           cep: '96830-260',
           rua: 'Rua Padre José Belzer',
@@ -29,29 +41,37 @@ exports.post = async (req, res, next) => {
           estado: 'RS',
           link: 'https://animaeducacao.zoom.us/j/82475918671',
           tipo: 'fisico'
-        }
-      }
-    }
+        },
+      },
+    },
   */
 
-  if(req.body.dadosJSON){
+  if (req.body.dadosJSON) {
     req.body = Object.assign({}, req.body, JSON.parse(req.body.dadosJSON));
   }
 
-  if (req?.files?.arquivo) {
-    req.body.arquivo_id_arquivo_arquivo = await arquivos.SalvarArquivo(
-      req.files.arquivo,
-      "laboratorio"
-    );
+  if (req.files) {
+    req.body.arquivos_has_projetos = [];
+
+    const arquivosList = await arquivos.SalvarArquivos(req.files, "projeto");
+
+    arquivosList.forEach((element) => {
+      req.body.arquivos_has_projetos.push({
+        arquivo_id_arquivo_arquivo: element,
+      });
+    });
   }
 
+  req.body.data_inicial = data.ConvertDataBRtoUS(req.body.data_inicial);
+  req.body.data_final = data.ConvertDataBRtoUS(req.body.data_final);
+
   req.body.endereco_id_endereco_endereco = req.body.endereco;
-  req.body.lider_lab_id_lider_lab = req.body.jwtDecodeDados.id_lider_lab;
+  req.body.lider_lab_id_lider_lab = req.body.jwtDecodeDados?.id_lider_lab;
 
   // Criptografando Senha
   const models = connection.initModels();
 
-  models.laboratorio
+  models.projeto
     .create(req.body, {
       include: [
         {
@@ -59,16 +79,19 @@ exports.post = async (req, res, next) => {
           as: "endereco_id_endereco_endereco",
         },
         {
-          model: models.arquivo,
-          as: "arquivo_id_arquivo_arquivo",
+          model: models.arquivos_has_projetos,
+          as: "arquivos_has_projetos",
+          include: [
+            { model: models.arquivo, as: "arquivo_id_arquivo_arquivo" },
+          ],
         },
       ],
     })
     .then(async (response) => {
       res.status(200).send({
-        message: "Laboratorio cadastrado com suscesso",
+        message: "Projetos cadastrado com sucesso",
         dados: {
-          laboratorio: response,
+          projeto: response,
         },
       });
     })
@@ -81,12 +104,12 @@ exports.post = async (req, res, next) => {
 };
 
 exports.getAll = async (req, res, next) => {
-  // #swagger.tags = ['Laboratorios']
-  // #swagger.description = 'Endpoint para listar Laboratorios do sistema.'
+  // #swagger.tags = ['Projects']
+  // #swagger.description = 'Endpoint para listar Projetos do sistema.'
 
   const models = connection.initModels();
 
-  models.laboratorio
+  models.projeto
     .findAll({
       include: [
         {
@@ -97,15 +120,11 @@ exports.getAll = async (req, res, next) => {
           model: models.lider_lab,
           as: "lider_lab_id_lider_lab_lider_lab",
         },
-        {
-          model: models.arquivo,
-          as: "arquivo_id_arquivo_arquivo",
-        },
       ],
     })
     .then(async (response) => {
       res.status(200).send({
-        message: "Laboratorio encontrados com suscesso",
+        message: "Projeto encontrados com sucesso",
         dados: {
           laboratorio: response,
         },

@@ -33,19 +33,19 @@ app.use(function (req, res, next) {
 });
 
 //Carrega todas as rotas
-const usuario_route = require('./routes/usuario-route');
-const token_route = require('./routes/token-route');
-const laboratorio_route = require('./routes/laboratorio-route');
-const projetos_route = require('./routes/projeto-route');
-const evento_route = require('./routes/evento-route');
+const users_route = require('./routes/users-routes');
+const token_route = require('./routes/token-routes');
+const laboratories_route = require('./routes/laboratories-routes');
+const projects_route = require('./routes/projects-routes');
+const events_route = require('./routes/events-routes');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/usuario', usuario_route);
-app.use('/laboratorio', laboratorio_route);
-app.use('/projeto', projetos_route);
-app.use('/evento', evento_route);
+app.use('/users', users_route);
+app.use('/laboratories', laboratories_route);
+app.use('/projects', projects_route);
+app.use('/events', events_route);
 app.use('/token', token_route);
 
 app.use("/assets",express.static("assets"));

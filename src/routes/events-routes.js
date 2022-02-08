@@ -2,10 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const controler=require('../controler/evento-controler');
+const controller=require('../controller/events-controller');
 const authService=require('../services/auth-service');
 
 // CRUD
-router.post('/',authService.authorize, controler.post);
+router.post('/',authService.authorize, controller.post);
 
 module.exports=router;
