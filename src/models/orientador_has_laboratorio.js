@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('orientador_has_laboratorio', {
     orientador_id_orientador: {
       type: DataTypes.UUID,

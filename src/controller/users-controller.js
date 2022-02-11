@@ -5,19 +5,19 @@ const authService = require("../services/auth-service");
 const mailService = require("../services/mail-service");
 const md5 = require("md5");
 const connection = require("../models/init-models");
-const arquivos = require("./arquivos-controler");
-const dataFunctions = require("../validator/data");
+const files = require("./files-controller");
+const dataFormatter = require("../validator/data");
 const { Op } = require("sequelize");
 
-const userTipes = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
-const addressTypes = ["fisico", "virtual", "indefinido"];
+const USER_TYPES = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
+const ADDRESS_TYPE = ["fisico", "virtual", "indefinido"];
 
 exports.post = async (req, res, next) => {
-  // #swagger.tags = ['Usuario']
-  // #swagger.description = 'Endpoint para cadastrar no sistema.'
-  /* #swagger.parameters['dados'] = {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Insert new user into database.'
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Informações para login usuário.',
+      description: 'User object that needs to be added to the system',
       required: true,
       type: 'object',
       schema: { 
@@ -54,7 +54,7 @@ exports.post = async (req, res, next) => {
 
   dataValidator.includeIn(
     req.body.tipo_usuario,
-    userTipes,
+    USER_TYPES,
     "Campo `tipo_usuario` é invalido"
   );
 
@@ -109,7 +109,7 @@ exports.post = async (req, res, next) => {
   }
   // Inserindo objeto arquivo
   if (req.files?.arquivo) {
-    req.body.arquivo_id_arquivo_arquivo = await arquivos.SalvarArquivo(
+    req.body.arquivo_id_arquivo_arquivo = await files.saveFile(
       req.files.arquivo,
       "usuario"
     );
@@ -143,8 +143,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(200).send({
-        message: "Usuario encontrado com suscesso",
+      res.status(201).send({
         dados: {
           usuario: response,
         },
@@ -159,12 +158,12 @@ exports.post = async (req, res, next) => {
 };
 
 exports.put = async (req, res, next) => {
-  // #swagger.tags = ['Usuario']
-  // #swagger.description = 'Endpoint para atualizar dados do usuário no sistema.'
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Update data for an existing user.'
   // #swagger.security = [{ApiKeyAuth: []}]
-  /* #swagger.parameters['dados'] = {
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Dados para atualizar cadastro.',
+      description: 'User object that needs to be updated in the system',
       required: true,
       type: 'object',
       schema: { 
@@ -210,7 +209,7 @@ exports.put = async (req, res, next) => {
     dataValidator.isEmail(req.body.email, "O `email` é invalido");
     dataValidator.includeIn(
       req.body.tipo_usuario,
-      userTipes,
+      USER_TYPES,
       "Campo `tipo_usuario` é invalido"
     );
 
@@ -221,7 +220,7 @@ exports.put = async (req, res, next) => {
       );
       dataValidator.includeIn(
         req.body.endereco.tipo,
-        addressTypes,
+        ADDRESS_TYPE,
         "Campo `endereco.tipo` é invalido"
       );
     }
@@ -256,12 +255,12 @@ exports.put = async (req, res, next) => {
       where: { id_endereco: usuario.endereco_id_endereco },
     });
 
-    req.body.telefone = dataFunctions.RemoveNotNumberDigits(req.body.telefone);
+    req.body.telefone = dataFormatter.RemoveNotNumberDigits(req.body.telefone);
 
     await endereco_usuario.update(req.body.endereco);
     await usuario.update(req.body);
 
-    res.status(200).send({ message: "Usuario atualizado com sucesso" });
+    res.status(200).send();
   } catch (err) {
     res.status(500).send({ message: err.message });
   } finally {
@@ -271,11 +270,11 @@ exports.put = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-  // #swagger.tags = ['Usuario']
-  // #swagger.description = 'Endpoint para logar no sistema.'
-  /* #swagger.parameters['dados_login'] = {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Generate access token with user credentials.'
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Informações para login usuário.',
+      description: 'Access credentials.',
       required: true,
       type: 'object',
       schema: { 
@@ -360,7 +359,6 @@ exports.login = async (req, res, next) => {
       let jwt = await authService.generateToken(dadosUsuario);
 
       res.status(200).send({
-        message: "Usuario encontrado com suscesso",
         dados: {
           jwt: jwt,
           usuario: dadosUsuario,
@@ -377,11 +375,11 @@ exports.login = async (req, res, next) => {
 };
 
 exports.sendMailToResetPassword = async (req, res, next) => {
-  // #swagger.tags = ['Usuario']
-  // #swagger.description = 'Endpoint para envio de email com link para criação de nova senha.'
-  /* #swagger.parameters['email'] = {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Send an email with a link to create a new password. '
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Email para recuperação de conta.',
+      description: 'Account recovery email.',
       required: true,
       type: 'object',
       schema: { 
@@ -456,12 +454,13 @@ exports.sendMailToResetPassword = async (req, res, next) => {
         response[tipo_usuario + "s"][0]["id_" + tipo_usuario];
 
       let jwt = await authService.generateToken(userResponse, "1h");
-      const result = await mailService.sendRecoveryPasswordMail(response.email, jwt);
-      
+      const result = await mailService.sendRecoveryPasswordMail(
+        response.email,
+        jwt
+      );
+
       if (result) {
-        res.status(200).send({
-          message: "Email enviado com suscesso",
-        });
+        res.status(200).send();
       } else {
         res.status(500).send({
           message: "Falha ao enviar e-mail de recuperação",
@@ -478,12 +477,12 @@ exports.sendMailToResetPassword = async (req, res, next) => {
 };
 
 exports.updatePassword = async (req, res, next) => {
-  // #swagger.tags = ['Usuario']
-  // #swagger.description = 'Endpoint para atualização de senha na plataforma.'
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Update an users password with an emailed token.'
   // #swagger.security = [{ApiKeyAuth: []}]
-  /* #swagger.parameters['senha'] = {
+  /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'Nova senha escolhida para uso na plataforma.',
+      description: 'New password chosen for use on the platform.',
       required: true,
       type: 'object',
       schema: { 
@@ -526,9 +525,7 @@ exports.updatePassword = async (req, res, next) => {
         senha: new_pass,
       });
 
-      res.status(200).send({
-        message: "Senha atualizada com suscesso",
-      });
+      res.status(200).send();
     })
     .catch((err) => {
       console.log("ERRO: ", err);

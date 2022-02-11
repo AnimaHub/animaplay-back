@@ -10,17 +10,21 @@ exports.decodeToken = async (token) => {
   return data;
 };
 
-exports.authorize = function (req, res, next) {
+exports.authorize = async (req, res, next) => {
   var token = req.headers["x-access-token"];
 
-  if (!token || !req.TipeAuthorization) {
+  if (!token || !req.authorization_type) {
     res.status(401).json({
       message: "Acesso Restrito",
     });
   } else {
-    jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
-
-      if (error || decoded.id_usuario === undefined || !decoded.tipo_usuario ||!req.TipeAuthorization.includes(decoded.tipo_usuario)) {
+    jwt.verify(token, process.env.KEY_SERVE, (error, decoded) => {
+      if (
+        error ||
+        decoded.id_usuario === undefined ||
+        !decoded.tipo_usuario ||
+        !req.authorization_type.includes(decoded.tipo_usuario)
+      ) {
         res.status(401).json({
           message: "Token inválido para rota",
         });
@@ -32,8 +36,9 @@ exports.authorize = function (req, res, next) {
   }
 };
 
-exports.verifyGuard = function (req, res, next) {
+exports.verifyGuard = (req, res, next) => {
   // #swagger.tags = ['Token']
+  // #swagger.summary = 'Validate a previous generated token.'
   // #swagger.security = [{ApiKeyAuth: []}]
 
   var token = req.headers["x-access-token"];
@@ -43,7 +48,7 @@ exports.verifyGuard = function (req, res, next) {
       message: "Acesso Restrito",
     });
   } else {
-    jwt.verify(token, process.env.KEY_SERVE, function (error, decoded) {
+    jwt.verify(token, process.env.KEY_SERVE, (error, decoded) => {
       if (
         error ||
         !req.params.tipo_usuario ||
