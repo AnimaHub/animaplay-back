@@ -7,9 +7,14 @@ module.exports = {
       defaultValue: 'usuario',
       allowNull: false 
     });
+    queryInterface.addColumn('usuario', 'foto', { 
+      type: Sequelize.DataTypes.TEXT("long"),
+      allowNull: true
+    });
   },
   
   down: async (queryInterface, Sequelize) => {
     queryInterface.removeColumn('usuario', 'nome');
+    queryInterface.removeColumn('usuario', 'foto');
   }
 };
