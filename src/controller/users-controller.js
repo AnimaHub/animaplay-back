@@ -108,9 +108,8 @@ exports.post = async (req, res, next) => {
     connection.closeConnection(models.sequelize);
     return;
   }
-  
+
   if (req.body?.dadosJSON) {
-    
     req.body = Object.assign({}, req.body, JSON.parse(req.body.dadosJSON));
   }
 
@@ -172,6 +171,8 @@ exports.put = async (req, res, next) => {
       schema: { 
         nome: 'Usuario de teste atualizado',
         email: 'contato@dominio.com',
+        cpf: '00099988877',
+        rg: '0123456',
         senha: 'minhaSenha',
         telefone: '31999999999',
         tipo_usuario: 'admin',
