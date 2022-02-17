@@ -36,9 +36,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(11),
       allowNull: true
     },
+    cpf: {
+      type: DataTypes.STRING(11),
+      allowNull: false
+    },
+    rg: {
+      type: DataTypes.STRING(13),
+      allowNull: false
+    },
     nome: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    foto: {
+      type: DataTypes.TEXT("long"),
+      allowNull: true
     },
   }, {
     sequelize,

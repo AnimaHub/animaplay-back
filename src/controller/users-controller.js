@@ -22,9 +22,12 @@ exports.post = async (req, res, next) => {
       type: 'object',
       schema: { 
         nome: 'Usuario de teste',
-        email: 'teste@teste.com',
-        senha: 'oloco',
-        telefone: '31 99566-8243',
+        email: 'contato@dominio.com',
+        cpf: '00099988877',
+        rg: '0123456',
+        senha: 'minhaSenha',
+        telefone: '31999999999',
+        foto: 'base64image',
         tipo_usuario: 'admin',
         endereco: {
           cep: '96830-260',
@@ -44,6 +47,8 @@ exports.post = async (req, res, next) => {
 
   dataValidator.isRequired(req.body.nome, "Campo `nome` é obrigatorio!");
   dataValidator.isRequired(req.body.senha, "Campo `senha` é obrigatorio!");
+  dataValidator.isRequired(req.body.cpf, "Campo `cpf` é obrigatorio!");
+  dataValidator.isRequired(req.body.rg, "Campo `rg` é obrigatorio!");
   dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
   dataValidator.isRequired(
     req.body.tipo_usuario,
@@ -99,7 +104,7 @@ exports.post = async (req, res, next) => {
   });
 
   if (emailExist) {
-    res.status(400).send({ mensage: "E-mail ja cadastrado!" }).end();
+    res.status(409).send().end();
     connection.closeConnection(models.sequelize);
     return;
   }
@@ -107,6 +112,7 @@ exports.post = async (req, res, next) => {
   if (req.body?.dadosJSON) {
     req.body = Object.assign({}, req.body, JSON.parse(req.body.dadosJSON));
   }
+
   // Inserindo objeto arquivo
   if (req.files?.arquivo) {
     req.body.arquivo_id_arquivo_arquivo = await files.saveFile(
@@ -143,11 +149,7 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
-      res.status(201).send({
-        dados: {
-          usuario: response,
-        },
-      });
+      res.status(201).send();
     })
     .catch((err) => {
       res.status(500).send(JSON.stringify(err?.sqlMessage));
@@ -168,9 +170,11 @@ exports.put = async (req, res, next) => {
       type: 'object',
       schema: { 
         nome: 'Usuario de teste atualizado',
-        email: 'teste@teste.com',
-        senha: 'oloco',
-        telefone: '11 99999-9999',
+        email: 'contato@dominio.com',
+        cpf: '00099988877',
+        rg: '0123456',
+        senha: 'minhaSenha',
+        telefone: '31999999999',
         tipo_usuario: 'admin',
         endereco: {
           cep: '65603-710',
@@ -242,7 +246,7 @@ exports.put = async (req, res, next) => {
     });
 
     if (emailExist) {
-      res.status(400).send({ message: "E-mail ja cadastrado!" }).end();
+      res.status(409).send().end();
       connection.closeConnection(models.sequelize);
     }
 
@@ -279,7 +283,7 @@ exports.login = async (req, res, next) => {
       type: 'object',
       schema: { 
         email: 'teste@teste.com',
-        senha: 'oloco'
+        senha: 'minhaSenha'
       }
     } 
   */
@@ -414,12 +418,7 @@ exports.sendMailToResetPassword = async (req, res, next) => {
     })
     .then(async (response) => {
       if (!response) {
-        res
-          .status(400)
-          .send({
-            message: "Usuário não encontrado",
-          })
-          .end();
+        res.status(404).send().end();
         return;
       }
 
