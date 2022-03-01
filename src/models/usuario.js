@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     cpf: {
       type: DataTypes.STRING(11),
-      allowNull: false
+      allowNull: true
     },
     rg: {
       type: DataTypes.STRING(13),
-      allowNull: false
+      allowNull: true
     },
     nome: {
       type: DataTypes.STRING(255),

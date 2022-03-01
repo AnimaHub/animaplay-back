@@ -23,22 +23,10 @@ exports.post = async (req, res, next) => {
       schema: { 
         nome: 'Usuario de teste',
         email: 'contato@dominio.com',
-        cpf: '00099988877',
-        rg: '0123456',
         senha: 'minhaSenha',
         telefone: '31999999999',
         foto: 'base64image',
-        tipo_usuario: 'admin',
-        endereco: {
-          cep: '96830-260',
-          rua: 'Rua Padre José Belzer',
-          bairro: 'Arroio Grande',
-          numero: '298',
-          cidade: 'Santa Cruz do Sul',
-          estado: 'RS',
-          link: 'https://animaeducacao.zoom.us/j/82475918671',
-          tipo: 'fisico'
-        }
+        tipo_usuario: 'aluno'
       }
     } 
   */
@@ -47,8 +35,6 @@ exports.post = async (req, res, next) => {
 
   dataValidator.isRequired(req.body.nome, "Campo `nome` é obrigatorio!");
   dataValidator.isRequired(req.body.senha, "Campo `senha` é obrigatorio!");
-  dataValidator.isRequired(req.body.cpf, "Campo `cpf` é obrigatorio!");
-  dataValidator.isRequired(req.body.rg, "Campo `rg` é obrigatorio!");
   dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
   dataValidator.isRequired(
     req.body.tipo_usuario,
@@ -62,19 +48,6 @@ exports.post = async (req, res, next) => {
     USER_TYPES,
     "Campo `tipo_usuario` é invalido"
   );
-
-  if (req.body.endereco) {
-    dataValidator.isRequired(
-      req.body.endereco.tipo,
-      "Campo `tipo` é obrigatorio!"
-    );
-
-    dataValidator.includeIn(
-      req.body.endereco.tipo,
-      ["fisico", "virtual", "indefinido"],
-      "Campo `endereco.tipo` é invalido"
-    );
-  }
 
   if (!dataValidator.isValid()) {
     res.status(400).send(dataValidator.errors()).end();
@@ -121,9 +94,6 @@ exports.post = async (req, res, next) => {
     );
   }
 
-  // Inserindo objeto endereco
-  req.body.endereco_id_endereco_endereco = req.body.endereco;
-
   // Criptografando Senha
   req.body.senha = md5(req.body.senha + process.env.KEY_SERVE);
 
@@ -137,10 +107,6 @@ exports.post = async (req, res, next) => {
   models.usuario
     .create(req.body, {
       include: [
-        {
-          model: models.endereco,
-          as: "endereco_id_endereco_endereco",
-        },
         {
           model: models.arquivo,
           as: "arquivo_id_arquivo_arquivo",
@@ -171,20 +137,9 @@ exports.put = async (req, res, next) => {
       schema: { 
         nome: 'Usuario de teste atualizado',
         email: 'contato@dominio.com',
-        cpf: '00099988877',
-        rg: '0123456',
         senha: 'minhaSenha',
         telefone: '31999999999',
-        tipo_usuario: 'admin',
-        endereco: {
-          cep: '65603-710',
-          rua: 'Avenida das Andorinhas',
-          bairro: 'Raiz',
-          numero: '298',
-          cidade: 'Caxias',
-          estado: 'MA',
-          tipo: 'fisico'
-        }
+        tipo_usuario: 'aluno'
       }
     } 
   */
@@ -217,18 +172,6 @@ exports.put = async (req, res, next) => {
       "Campo `tipo_usuario` é invalido"
     );
 
-    if (req.body.endereco) {
-      dataValidator.isRequired(
-        req.body.endereco.tipo,
-        "Campo `tipo` é obrigatorio!"
-      );
-      dataValidator.includeIn(
-        req.body.endereco.tipo,
-        ADDRESS_TYPE,
-        "Campo `endereco.tipo` é invalido"
-      );
-    }
-
     if (!dataValidator.isValid()) {
       res.status(400).send(dataValidator.errors()).end();
     }
@@ -255,17 +198,14 @@ exports.put = async (req, res, next) => {
       where: { id_usuario: userid },
     });
 
-    let endereco_usuario = await models.endereco.findOne({
-      where: { id_endereco: usuario.endereco_id_endereco },
-    });
-
+    req.body.senha = md5(req.body.senha + process.env.KEY_SERVE);
     req.body.telefone = dataFormatter.RemoveNotNumberDigits(req.body.telefone);
 
-    await endereco_usuario.update(req.body.endereco);
     await usuario.update(req.body);
 
     res.status(200).send();
   } catch (err) {
+    console.log(err)
     res.status(500).send({ message: err.message });
   } finally {
     connection.closeConnection(models.sequelize);
