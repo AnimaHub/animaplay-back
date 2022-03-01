@@ -214,7 +214,7 @@ exports.put = async (req, res, next) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Update data for an existing user.'
   // #swagger.security = [{ApiKeyAuth: []}]
-  /* #swagger.parameters['body'] = {
+/* #swagger.parameters['body'] = {
       in: 'body',
       description: 'User object that needs to be added to the system',
       required: true,
@@ -226,10 +226,12 @@ exports.put = async (req, res, next) => {
         telefone: '31999999999',
         foto: 'base64image',
         tipo_usuario: 'aluno',
-        ra: 'only for ânima students',
-        curso: 'required for all profiles, except parceiro',
-        instituicao: 'required for all profiles, except parceiro',
-        tipo_aluno: 'studying at anima, graduated at anima, not anima',        
+        ra: '1234567890',
+        curso: 'Análise e Desenvolvimento de Sistemas',
+        instituicao: 'Centro Universitário UNA',
+        tipo_aluno: 'anima_ativo', 
+        empresa: 'Ânima Educação',
+        cargo: 'Gerente de Projetos',
         endereco: {
           cep: '96830-260',
           rua: 'Rua Padre José Belzer',
@@ -241,7 +243,7 @@ exports.put = async (req, res, next) => {
         }
       }
     } 
-  */
+*/
 
   const models = connection.initModels();
 
