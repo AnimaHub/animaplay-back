@@ -11,6 +11,12 @@ const { Op } = require("sequelize");
 
 const USER_TYPES = ["admin", "aluno", "orientador", "lider_lab", "parceiro"];
 const ADDRESS_TYPE = ["fisico", "virtual", "indefinido"];
+const PROFILE_CONTRACTS = {
+  aluno: ["ra", "curso", "instituicao", "tipo_aluno"],
+  orientador: ["curso", "instituicao"],
+  lider_lab: ["curso", "instituicao"],
+  parceiro: ["empresa", "cargo", "endereco"],
+};
 
 exports.post = async (req, res, next) => {
   // #swagger.tags = ['Users']
@@ -23,12 +29,16 @@ exports.post = async (req, res, next) => {
       schema: { 
         nome: 'Usuario de teste',
         email: 'contato@dominio.com',
-        cpf: '00099988877',
-        rg: '0123456',
         senha: 'minhaSenha',
         telefone: '31999999999',
         foto: 'base64image',
-        tipo_usuario: 'admin',
+        tipo_usuario: 'aluno',
+        ra: '1234567890',
+        curso: 'Análise e Desenvolvimento de Sistemas',
+        instituicao: 'Centro Universitário UNA',
+        tipo_aluno: 'anima_ativo', 
+        empresa: 'Ânima Educação',
+        cargo: 'Gerente de Projetos',
         endereco: {
           cep: '96830-260',
           rua: 'Rua Padre José Belzer',
@@ -36,7 +46,6 @@ exports.post = async (req, res, next) => {
           numero: '298',
           cidade: 'Santa Cruz do Sul',
           estado: 'RS',
-          link: 'https://animaeducacao.zoom.us/j/82475918671',
           tipo: 'fisico'
         }
       }
@@ -47,8 +56,6 @@ exports.post = async (req, res, next) => {
 
   dataValidator.isRequired(req.body.nome, "Campo `nome` é obrigatorio!");
   dataValidator.isRequired(req.body.senha, "Campo `senha` é obrigatorio!");
-  dataValidator.isRequired(req.body.cpf, "Campo `cpf` é obrigatorio!");
-  dataValidator.isRequired(req.body.rg, "Campo `rg` é obrigatorio!");
   dataValidator.isRequired(req.body.email, "Campo `email` é obrigatorio!");
   dataValidator.isRequired(
     req.body.tipo_usuario,
@@ -74,6 +81,47 @@ exports.post = async (req, res, next) => {
       ["fisico", "virtual", "indefinido"],
       "Campo `endereco.tipo` é invalido"
     );
+  }
+
+  switch (req.body.tipo_usuario) {
+    case "aluno":
+      dataValidator.isRequired(req.body.ra, "Campo `ra` é obrigatorio!");
+      dataValidator.isRequired(req.body.curso, "Campo `curso` é obrigatorio!");
+      dataValidator.isRequired(
+        req.body.instituicao,
+        "Campo `instituicao` é obrigatorio!"
+      );
+      dataValidator.isRequired(
+        req.body.tipo_aluno,
+        "Campo `tipo_aluno` é obrigatorio!"
+      );
+      break;
+    case "orientador":
+      dataValidator.isRequired(req.body.curso, "Campo `curso` é obrigatorio!");
+      dataValidator.isRequired(
+        req.body.instituicao,
+        "Campo `instituicao` é obrigatorio!"
+      );
+      break;
+    case "lider_lab":
+      dataValidator.isRequired(req.body.curso, "Campo `curso` é obrigatorio!");
+      dataValidator.isRequired(
+        req.body.instituicao,
+        "Campo `instituicao` é obrigatorio!"
+      );
+      break;
+    case "parceiro":
+      dataValidator.isRequired(
+        req.body.empresa,
+        "Campo `empresa` é obrigatorio!"
+      );
+      dataValidator.isRequired(req.body.cargo, "Campo `cargo` é obrigatorio!");
+      dataValidator.isRequired(
+        req.body.endereco,
+        "Campo `endereco` é obrigatorio!"
+      );
+    default:
+      break;
   }
 
   if (!dataValidator.isValid()) {
@@ -120,7 +168,6 @@ exports.post = async (req, res, next) => {
       "usuario"
     );
   }
-
   // Inserindo objeto endereco
   req.body.endereco_id_endereco_endereco = req.body.endereco;
 
@@ -149,9 +196,11 @@ exports.post = async (req, res, next) => {
       ],
     })
     .then(async (response) => {
+      await updateProfileModel(req.body, response.id_usuario);
       res.status(201).send();
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).send(JSON.stringify(err?.sqlMessage));
     })
     .finally(() => {
@@ -159,30 +208,35 @@ exports.post = async (req, res, next) => {
     });
 };
 
+
+
 exports.put = async (req, res, next) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Update data for an existing user.'
   // #swagger.security = [{ApiKeyAuth: []}]
   /* #swagger.parameters['body'] = {
       in: 'body',
-      description: 'User object that needs to be updated in the system',
+      description: 'User object that needs to be added to the system',
       required: true,
       type: 'object',
       schema: { 
         nome: 'Usuario de teste atualizado',
         email: 'contato@dominio.com',
-        cpf: '00099988877',
-        rg: '0123456',
         senha: 'minhaSenha',
         telefone: '31999999999',
-        tipo_usuario: 'admin',
+        foto: 'base64image',
+        tipo_usuario: 'aluno',
+        ra: 'only for ânima students',
+        curso: 'required for all profiles, except parceiro',
+        instituicao: 'required for all profiles, except parceiro',
+        tipo_aluno: 'studying at anima, graduated at anima, not anima',        
         endereco: {
-          cep: '65603-710',
-          rua: 'Avenida das Andorinhas',
-          bairro: 'Raiz',
+          cep: '96830-260',
+          rua: 'Rua Padre José Belzer',
+          bairro: 'Arroio Grande',
           numero: '298',
-          cidade: 'Caxias',
-          estado: 'MA',
+          cidade: 'Santa Cruz do Sul',
+          estado: 'RS',
           tipo: 'fisico'
         }
       }
@@ -210,13 +264,6 @@ exports.put = async (req, res, next) => {
       "Campo `tipo_usuario` é obrigatorio!"
     );
 
-    dataValidator.isEmail(req.body.email, "O `email` é invalido");
-    dataValidator.includeIn(
-      req.body.tipo_usuario,
-      USER_TYPES,
-      "Campo `tipo_usuario` é invalido"
-    );
-
     if (req.body.endereco) {
       dataValidator.isRequired(
         req.body.endereco.tipo,
@@ -228,6 +275,13 @@ exports.put = async (req, res, next) => {
         "Campo `endereco.tipo` é invalido"
       );
     }
+
+    dataValidator.isEmail(req.body.email, "O `email` é invalido");
+    dataValidator.includeIn(
+      req.body.tipo_usuario,
+      USER_TYPES,
+      "Campo `tipo_usuario` é invalido"
+    );
 
     if (!dataValidator.isValid()) {
       res.status(400).send(dataValidator.errors()).end();
@@ -259,9 +313,11 @@ exports.put = async (req, res, next) => {
       where: { id_endereco: usuario.endereco_id_endereco },
     });
 
+    req.body.senha = md5(req.body.senha + process.env.KEY_SERVE);
     req.body.telefone = dataFormatter.RemoveNotNumberDigits(req.body.telefone);
 
     await endereco_usuario.update(req.body.endereco);
+
     await usuario.update(req.body);
 
     res.status(200).send();
@@ -529,6 +585,37 @@ exports.updatePassword = async (req, res, next) => {
     .catch((err) => {
       console.log("ERRO: ", err);
       res.status(500).send(JSON.stringify(err?.sqlMessage));
+    })
+    .finally(() => {
+      connection.closeConnection(models.sequelize);
+    });
+};
+
+const updateProfileModel = (request, user_id) => {
+  let profileData = new Object();
+  let selected_field = "";
+
+  for (
+    let index = 0;
+    index < PROFILE_CONTRACTS[request.tipo_usuario].length;
+    index++
+  ) {
+    selected_field = PROFILE_CONTRACTS[request.tipo_usuario][index];
+    profileData[selected_field] = request[selected_field];
+  }
+
+  const models = connection.initModels();
+  models[request.tipo_usuario]
+    .update(profileData, {
+      where: {
+        usuario_id_usuario: user_id,
+      },
+    })
+    .then(async () => {
+      return;
+    })
+    .catch((err) => {
+      console.log(err);
     })
     .finally(() => {
       connection.closeConnection(models.sequelize);
