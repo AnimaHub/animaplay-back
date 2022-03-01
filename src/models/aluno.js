@@ -15,7 +15,23 @@ module.exports = (sequelize, DataTypes) => {
         model: 'usuario',
         key: 'id_usuario'
       }
-    }
+    },
+    ra: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    curso: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    instituicao: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    tipo_aluno: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'aluno',

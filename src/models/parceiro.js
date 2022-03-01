@@ -8,6 +8,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
+    cargo: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    empresa: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     usuario_id_usuario: {
       type: DataTypes.UUID,
       allowNull: false,
