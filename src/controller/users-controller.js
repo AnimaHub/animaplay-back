@@ -181,19 +181,24 @@ exports.post = async (req, res, next) => {
   req.body.lider_labs = {};
   req.body.parceiros = {};
 
+  let models_included = [
+    {
+      model: models.arquivo,
+      as: "arquivo_id_arquivo_arquivo",
+    },
+    userType[req.body.tipo_usuario],
+  ];
+
+  if(req.body.endereco != undefined){
+    models_included.push({
+      model: models.endereco,
+      as: "endereco_id_endereco_endereco",
+    });
+  }
+
   models.usuario
     .create(req.body, {
-      include: [
-        {
-          model: models.endereco,
-          as: "endereco_id_endereco_endereco",
-        },
-        {
-          model: models.arquivo,
-          as: "arquivo_id_arquivo_arquivo",
-        },
-        userType[req.body.tipo_usuario],
-      ],
+      include: models_included,
     })
     .then(async (response) => {
       await updateProfileModel(req.body, response.id_usuario);
