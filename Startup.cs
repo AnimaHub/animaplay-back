@@ -30,8 +30,11 @@ namespace AnimaPlayBack
                 .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
             });
 
-            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>()
-                .AddEntityFrameworkStores<UserContext>();
+            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(
+                options => options.SignIn.RequireConfirmedEmail = true
+                )
+                .AddEntityFrameworkStores<UserContext>()
+                .AddDefaultTokenProviders();
 
             services.AddDbContext<DataContext>(options =>
             {
@@ -43,6 +46,7 @@ namespace AnimaPlayBack
             services.AddScoped<LogoutService, LogoutService>();
             services.AddScoped<EnrollService, EnrollService>();
             services.AddScoped<TokenService, TokenService>();
+            services.AddScoped<EmailService, EmailService>();
 
             services.AddControllers().AddJsonOptions(options =>
             {
