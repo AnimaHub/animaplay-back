@@ -10,12 +10,10 @@ namespace AnimaPlayBack.Controllers
     public class LoginController : ControllerBase
     {
         private LoginService _service;
-        private LogoutService _logoutService;
 
-        public LoginController(LoginService service, LogoutService logoutService)
+        public LoginController(LoginService service)
         {
             this._service = service;
-            this._logoutService = logoutService;
         }
 
         [HttpPost]
@@ -26,14 +24,5 @@ namespace AnimaPlayBack.Controllers
             return Ok(result.Successes);
         }
 
-        [HttpPost("Logout")]
-        public IActionResult Logout()
-        {
-            var result = this._logoutService.Logout();
-
-            if (result.IsFailed) return NotFound(result.Errors);
-
-            return Ok(result.Successes);
-        }
     }
 }
