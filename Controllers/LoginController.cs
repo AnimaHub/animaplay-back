@@ -24,5 +24,25 @@ namespace AnimaPlayBack.Controllers
             return Ok(result.Successes);
         }
 
+        [HttpPost("request-reset-password")]
+        public IActionResult RequestResetUserPassword(ResetPasswordRequest request) 
+        {
+            var result = this._service.RequestResetUserPassword(request);
+
+            if (result.IsFailed) return Unauthorized(result.Errors);
+
+            return Ok(result.Successes);
+        }
+
+        [HttpPost("reset-password")]
+        public IActionResult ResetUserPassword(ResetRequest request)
+        {
+            var result = this._service.ResetUserPassword(request);
+
+            if (result.IsFailed) return Unauthorized(result.Errors);
+
+            return Ok(result.Successes);
+        }
+
     }
 }

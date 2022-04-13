@@ -22,7 +22,7 @@ namespace AnimaPlayBack.Services
         {
             var identityResult = this
                 ._signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
-            
+
             if (identityResult.Result.Succeeded)
             {
                 var identityUser = this._signInManager
@@ -34,6 +34,43 @@ namespace AnimaPlayBack.Services
             }
 
             return Result.Fail("Login failed");
+        }
+
+        public Result ResetUserPassword(ResetRequest request)
+        {
+            var identityUser = getIdentityUserByEmail(request.Email);
+
+            if (identityUser == null) return Result.Fail($"User with the email {request.Email} does not exist");
+
+            var identityResult = this._signInManager.UserManager
+                .ResetPasswordAsync(identityUser, request.Token, request.Password).Result;
+
+            if (identityResult.Succeeded) return Result.Ok().WithSuccess("Password was redefined with succcess");
+
+            return Result.Fail("Fail reseting the password");
+
+        }
+
+        public Result RequestResetUserPassword(ResetPasswordRequest request)
+        {
+            var identityUser = getIdentityUserByEmail(request.Email);
+
+            if (identityUser == null) return Result.Fail($"User with the email {request.Email} does not exist");
+
+            var recoveryCode = this._signInManager.UserManager
+                .GeneratePasswordResetTokenAsync(identityUser).Result;
+
+            return Result.Ok().WithSuccess(recoveryCode);
+        }
+
+        private IdentityUser<int> getIdentityUserByEmail(string email)
+        {
+            var user = this._signInManager
+                .UserManager
+                .Users
+                .FirstOrDefault(u => u.NormalizedEmail == email.ToUpper());
+
+            return user; 
         }
     }
 }
