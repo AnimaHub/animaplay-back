@@ -54,8 +54,44 @@ namespace AnimaPlayBack.Data
                 );
 
             builder.Entity<IdentityUserRole<int>>().HasData(
-                new IdentityUserRole<int> { RoleId = 1, UserId = 1}
+                new IdentityUserRole<int> { RoleId = 1, UserId = 1 }
                 );
+
+            builder.Entity<Student>()
+                .HasOne(s => s.CustomIdentityUser)
+                .WithOne(ciu => ciu.Student)
+                .HasForeignKey<Student>(s => s.CustomIdentityUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Student>()
+                .HasOne(s => s.Institution)
+                .WithMany(i => i.Students)
+                .HasForeignKey(s => s.InstitutionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Student>()
+                .HasOne(s => s.Course)
+                .WithMany(c => c.Students)
+                .HasForeignKey(s => s.CourseId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CourseInstitution>()
+                .HasOne(ci => ci.Course)
+                .WithMany(c => c.CourseInstitution)
+                .HasForeignKey(ci => ci.CourseId);
+
+            builder.Entity<CourseInstitution>()
+                .HasOne(ci => ci.Institution)
+                .WithMany(i => i.CourseInstitution)
+                .HasForeignKey(ci => ci.InstitutionId);
+
         }
+
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Institution> Institutions { get; set; }
+        public DbSet<CourseInstitution> CourseInstitution { get; set; }
     }
 }

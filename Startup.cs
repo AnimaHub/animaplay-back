@@ -32,6 +32,7 @@ namespace AnimaPlayBack
             services.AddDbContext<UserContext>(options =>
             {
                 options
+                .UseLazyLoadingProxies()
                 .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
             });
 
