@@ -1,6 +1,7 @@
 ﻿using AnimaPlayBack.Dtos;
 using AnimaPlayBack.Models.Requests;
 using AnimaPlayBack.Services;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnimaPlayBack.Controllers
@@ -18,6 +19,14 @@ namespace AnimaPlayBack.Controllers
         public IActionResult Enroll([FromBody] LoginDTO dto)
         {
             var result = this._service.Enroll(dto);
+            if (result.IsFailed) return BadRequest(result.Errors);
+            return Ok(result.Successes);
+        }
+
+        [HttpPost("student")]
+        public IActionResult EnrollStudent([FromBody] StudentDTO dto)
+        {
+            var result = this._service.EnrollStudent(dto);
             if (result.IsFailed) return BadRequest(result.Errors);
             return Ok(result.Successes);
         }

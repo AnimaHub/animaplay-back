@@ -33,7 +33,7 @@ namespace AnimaPlayBack
             {
                 options
                 .UseLazyLoadingProxies()
-                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
+                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionLocal"));
             });
 
             services.AddIdentity<CustomIdentityUser, IdentityRole<int>>(
@@ -41,12 +41,6 @@ namespace AnimaPlayBack
                 )
                 .AddEntityFrameworkStores<UserContext>()
                 .AddDefaultTokenProviders();
-
-            services.AddDbContext<DataContext>(options =>
-            {
-                options
-                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
-            });
 
             services.AddScoped<LoginService, LoginService>();
             services.AddScoped<LogoutService, LogoutService>();

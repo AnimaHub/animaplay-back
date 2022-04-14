@@ -29,7 +29,7 @@ namespace AnimaPlayBack.Services
         {
             if (IsEmailOnTheDataBase(dto.Email))
             {
-                return Result.Fail($"There is an account with the email: {dto.Email}");
+                return Result.Fail($"There is already an account with the email: {dto.Email}");
             }
 
             var userRole = UserTypeExtensions.getUserString(dto.UserType);
@@ -61,6 +61,53 @@ namespace AnimaPlayBack.Services
 
                 return Result.Ok().WithSuccess(code);
             }
+            return Result.Fail("Fail enrolling an user");
+        }
+
+        public Result EnrollStudent(StudentDTO dto)
+        {
+            if (IsEmailOnTheDataBase(dto.Email))
+            {
+                return Result.Fail($"There is already an account with the email: {dto.Email}");
+            }
+
+            var userRole = UserTypeExtensions.getUserString(dto.UserType);
+
+            if (!(userRole == "student"))
+            {
+                return Result.Fail($"the user role: {userRole} is not allowed on this api");
+            }
+
+            var user = this._mapper.Map<User>(dto);
+            var identityUser = this._mapper.Map<CustomIdentityUser>(user);
+            var identityResult = this._userManager.CreateAsync(identityUser, dto.Password);
+
+            if (identityResult.Result.Succeeded)
+            {
+                var student = this._mapper.Map<Student>(dto);
+                student.CustomIdentityUser = identityUser;
+
+                this._context.Students.Add(student);
+
+                this._context.SaveChanges();
+
+                var activationCode = this._userManager
+                    .GenerateEmailConfirmationTokenAsync(identityUser);
+
+                this._userManager.AddToRoleAsync(identityUser, userRole);
+                var code = activationCode.Result;
+                var encondedCode = HttpUtility.UrlEncode(code);
+
+                this._emailService.SendEmail(
+                    new[] { identityUser.Email },
+                    "HUB ANIMA LAB - Link de Ativação",
+                    identityUser.Id,
+                    encondedCode
+                    );
+
+                return Result.Ok().WithSuccess(code);
+            }
+
             return Result.Fail("Fail enrolling an user");
         }
 

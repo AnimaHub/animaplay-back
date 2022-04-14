@@ -5,13 +5,15 @@ namespace AnimaPlayBack.Dtos
 {
     public class LoginDTO
     {
-        public LoginDTO(string username, int phonenumber, string email, string password, string repassword)
+        public LoginDTO(string username, int phonenumber, string email, string password, string repassword, DateTime birthDate, UserTypeEnum userType)
         {
             this.UserName = username;
             this.PhoneNumber = phonenumber;
             this.Email = email;
             this.Password = password;
             this.RePassword = repassword;
+            this.UserType = userType;
+            this.BirthDate = birthDate;
         }
 
         [StringLength(50)]
