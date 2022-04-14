@@ -2,11 +2,11 @@
 {
     public enum UserTypeEnum
     {
-        ADMIN,
-        LIDERLAB,
-        ORIENTADOR,
-        ALUNO,
-        PARCEIRO
+        STUDENT,
+        ADVISOR,
+        PARTNER,
+        LABLIDER,
+        ADMIN
     }
     public static class UserTypeExtensions
     {
@@ -15,17 +15,17 @@
             switch (typeEnum)
             {
                 case UserTypeEnum.ADMIN:
-                    return "Administrador";
-                case UserTypeEnum.LIDERLAB:
-                    return "Líder de Laboratório";
-                case UserTypeEnum.ORIENTADOR:
-                    return "Orientador";
-                case UserTypeEnum.ALUNO:
-                    return "Aluno";
-                case UserTypeEnum.PARCEIRO:
-                    return "Parceiro";
+                    return "admin";
+                case UserTypeEnum.LABLIDER:
+                    return "lablider";
+                case UserTypeEnum.ADVISOR:
+                    return "advisor";
+                case UserTypeEnum.STUDENT:
+                    return "student";
+                case UserTypeEnum.PARTNER:
+                    return "partner";
                 default:
-                    return "";
+                    return "undefined";
             }
         }
     }

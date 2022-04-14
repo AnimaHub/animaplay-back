@@ -1,7 +1,13 @@
-﻿using AnimaPlayBack.Data;
+﻿using AnimaPlayBack.Authorization;
+using AnimaPlayBack.Data;
+using AnimaPlayBack.Entities;
 using AnimaPlayBack.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace AnimaPlayBack
@@ -23,14 +29,13 @@ namespace AnimaPlayBack
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
             services.AddDbContext<UserContext>(options =>
             {
                 options
                 .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
             });
 
-            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(
+            services.AddIdentity<CustomIdentityUser, IdentityRole<int>>(
                 options => options.SignIn.RequireConfirmedEmail = true
                 )
                 .AddEntityFrameworkStores<UserContext>()
@@ -48,17 +53,47 @@ namespace AnimaPlayBack
             services.AddScoped<TokenService, TokenService>();
             services.AddScoped<EmailService, EmailService>();
 
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(token =>
+            {
+                token.RequireHttpsMetadata = false;
+                token.SaveToken = true;
+                token.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("minAge", policy =>
+                {
+                    policy.Requirements.Add(new MinAgeRequirement(18));
+                });
+            });
+
+            services.AddSingleton<IAuthorizationHandler, MinAgeHandler>();
+
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            //services.Configure<IdentityOptions>(options =>
-            //{
-            //    options.Password.RequireNonAlphanumeric = false;
-            //    options.Password.RequireUppercase = false;
-            //    options.Password.RequiredLength = 8;
-            //});
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -73,11 +108,14 @@ namespace AnimaPlayBack
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
         }
     }
 }

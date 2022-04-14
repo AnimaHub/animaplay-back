@@ -11,6 +11,7 @@ namespace AnimaPlayBack.Profiles
         {
             CreateMap<LoginDTO, User>();
             CreateMap<User, IdentityUser<int>>();
+            CreateMap<User, CustomIdentityUser>();
         }
     }
 }

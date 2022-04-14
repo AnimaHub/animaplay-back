@@ -1,13 +1,14 @@
-﻿using FluentResults;
+﻿using AnimaPlayBack.Entities;
+using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace AnimaPlayBack.Services
 {
     public class LogoutService
     {
-        private SignInManager<IdentityUser<int>> _signInManager;
+        private SignInManager<CustomIdentityUser> _signInManager;
 
-        public LogoutService(SignInManager<IdentityUser<int>> signInManager)
+        public LogoutService(SignInManager<CustomIdentityUser> signInManager)
         {
             this._signInManager = signInManager;
         }

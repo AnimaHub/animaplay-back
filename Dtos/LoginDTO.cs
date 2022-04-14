@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AnimaPlayBack.Models.Enumerators;
+using System.ComponentModel.DataAnnotations;
 
 namespace AnimaPlayBack.Dtos
 {
@@ -31,5 +32,10 @@ namespace AnimaPlayBack.Dtos
         [Required]
         [Compare("Password")]
         public string RePassword { get; set; }
+
+        [Required]
+        public UserTypeEnum UserType { get; set; }
+
+        public DateTime BirthDate { get; set; }
     }
 }

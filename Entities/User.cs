@@ -24,6 +24,6 @@ namespace AnimaPlayBack.Entities
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
 
-        public virtual Student? Student { get; set; }
+        public DateTime BirthDate { get; set; }
     }
 }

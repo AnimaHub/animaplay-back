@@ -9,10 +9,10 @@ namespace AnimaPlayBack.Services
 {
     public class LoginService
     {
-        private SignInManager<IdentityUser<int>> _signInManager;
+        private SignInManager<CustomIdentityUser> _signInManager;
         private TokenService _tokenService;
 
-        public LoginService(SignInManager<IdentityUser<int>> signInManager, TokenService tokenService)
+        public LoginService(SignInManager<CustomIdentityUser> signInManager, TokenService tokenService)
         {
             this._signInManager = signInManager;
             this._tokenService = tokenService;
@@ -29,7 +29,12 @@ namespace AnimaPlayBack.Services
                     .UserManager.Users.FirstOrDefault(user =>
                     user.NormalizedUserName == request.Username.ToUpper());
 
-                var token = this._tokenService.CreateToken(identityUser);
+                var role = this._signInManager.UserManager
+                    .GetRolesAsync(identityUser)
+                    .Result.FirstOrDefault();
+
+                var token = this._tokenService.CreateToken(identityUser, role);
+
                 return Result.Ok().WithSuccess(token.Value);
             }
 
@@ -63,14 +68,14 @@ namespace AnimaPlayBack.Services
             return Result.Ok().WithSuccess(recoveryCode);
         }
 
-        private IdentityUser<int> getIdentityUserByEmail(string email)
+        private CustomIdentityUser getIdentityUserByEmail(string email)
         {
             var user = this._signInManager
                 .UserManager
                 .Users
                 .FirstOrDefault(u => u.NormalizedEmail == email.ToUpper());
 
-            return user; 
+            return user;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AnimaPlayBack.Data;
 using AnimaPlayBack.Dtos;
 using AnimaPlayBack.Entities;
+using AnimaPlayBack.Models.Enumerators;
 using AnimaPlayBack.Models.Requests;
 using AutoMapper;
 using FluentResults;
@@ -11,12 +12,12 @@ namespace AnimaPlayBack.Services
 {
     public class EnrollService
     {
-        private UserManager<IdentityUser<int>> _userManager;
+        private UserManager<CustomIdentityUser> _userManager;
         private IMapper _mapper;
         private UserContext _context;
         private EmailService _emailService;
 
-        public EnrollService(UserManager<IdentityUser<int>> userManager, IMapper mapper, UserContext context, EmailService emailService)
+        public EnrollService(UserManager<CustomIdentityUser> userManager, IMapper mapper, UserContext context, EmailService emailService)
         {
             this._userManager = userManager;
             this._mapper = mapper;
@@ -26,13 +27,20 @@ namespace AnimaPlayBack.Services
 
         public Result Enroll(LoginDTO dto)
         {
-            if (IsEmailOnTheDataBase(dto.Email)) 
+            if (IsEmailOnTheDataBase(dto.Email))
             {
                 return Result.Fail($"There is an account with the email: {dto.Email}");
             }
 
+            var userRole = UserTypeExtensions.getUserString(dto.UserType);
+
+            if (userRole == "admin" || userRole == "undefined")
+            {
+                return Result.Fail("the user role is not allowed");
+            }
+
             var user = this._mapper.Map<User>(dto);
-            var identityUser = this._mapper.Map<IdentityUser<int>>(user);
+            var identityUser = this._mapper.Map<CustomIdentityUser>(user);
             var identityResult = this._userManager.CreateAsync(identityUser, dto.Password);
 
             if (identityResult.Result.Succeeded)
@@ -40,17 +48,18 @@ namespace AnimaPlayBack.Services
                 var activationCode = this._userManager
                     .GenerateEmailConfirmationTokenAsync(identityUser);
 
+                this._userManager.AddToRoleAsync(identityUser, userRole);
                 var code = activationCode.Result;
                 var encondedCode = HttpUtility.UrlEncode(code);
 
                 this._emailService.SendEmail(
-                    new [] {identityUser.Email},
+                    new[] { identityUser.Email },
                     "HUB ANIMA LAB - Link de Ativação",
                     identityUser.Id,
                     encondedCode
                     );
 
-                return Result.Ok().WithSuccess(code) ;
+                return Result.Ok().WithSuccess(code);
             }
             return Result.Fail("Fail enrolling an user");
         }

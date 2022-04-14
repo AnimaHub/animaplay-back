@@ -1,5 +1,5 @@
-﻿using AnimaPlayBack.Models.Requests;
-using Microsoft.AspNetCore.Identity;
+﻿using AnimaPlayBack.Entities;
+using AnimaPlayBack.Models.Requests;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,16 +9,23 @@ namespace AnimaPlayBack.Services
 {
     public class TokenService
     {
-        public Token CreateToken(IdentityUser<int> user)
+        private IConfiguration _config;
+        public TokenService(IConfiguration config = null)
+        {
+            this._config = config;
+        }
+        public Token CreateToken(CustomIdentityUser user, string role)
         {
             var userRights = new Claim[] 
             {
                 new Claim("username", user.UserName),
-                new Claim("id", user.Id.ToString())
+                new Claim("id", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, role)
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("cadeiadebaitescomonomedeleonardooliveirafreitasomelhordevdomundo")
+                Encoding.UTF8
+                .GetBytes(this._config.GetValue<string>("AppSettings:Token"))
                 );
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
