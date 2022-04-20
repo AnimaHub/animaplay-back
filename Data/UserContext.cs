@@ -77,6 +77,46 @@ namespace AnimaPlayBack.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Advisor>()
+                .HasOne(a => a.CustomIdentityUser)
+                .WithOne(ciu => ciu.Advisor)
+                .HasForeignKey<Advisor>(a => a.CustomIdentityUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Advisor>()
+                .HasOne(a => a.Institution)
+                .WithMany(i => i.Advisors)
+                .HasForeignKey(a => a.InstitutionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Advisor>()
+                .HasOne(a => a.Course)
+                .WithMany(c => c.Advisors)
+                .HasForeignKey(a => a.CourseId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<LabLider>()
+                .HasOne(ll => ll.CustomIdentityUser)
+                .WithOne(ciu => ciu.LabLider)
+                .HasForeignKey<LabLider>(ll => ll.CustomIdentityUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<LabLider>()
+                .HasOne(ll => ll.Institution)
+                .WithMany(i => i.LabLiders)
+                .HasForeignKey(ll => ll.InstitutionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<LabLider>()
+                .HasOne(ll => ll.Course)
+                .WithMany(c => c.LabLiders)
+                .HasForeignKey(ll => ll.CourseId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<CourseInstitution>()
                 .HasOne(ci => ci.Course)
                 .WithMany(c => c.CourseInstitution)
@@ -87,9 +127,24 @@ namespace AnimaPlayBack.Data
                 .WithMany(i => i.CourseInstitution)
                 .HasForeignKey(ci => ci.InstitutionId);
 
+            builder.Entity<Partner>()
+                .HasOne(p => p.CustomIdentityUser)
+                .WithOne(ciu => ciu.Partner)
+                .HasForeignKey<Partner>(p => p.CustomIdentityUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Address>()
+                .HasOne(a => a.Partner)
+                .WithOne(p => p.Address)
+                .HasForeignKey<Address>(a => a.PartnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Student> Students { get; set; }
+        public DbSet<Advisor> Advisors { get; set; }
+        public DbSet<LabLider> LabLiders { get; set; }
+        public DbSet<Partner> Partners { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<CourseInstitution> CourseInstitution { get; set; }

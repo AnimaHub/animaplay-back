@@ -14,6 +14,10 @@ namespace AnimaPlayBack.Entities
 
         [JsonIgnore]
         public virtual List<Student>? Students { get; set; }
+        [JsonIgnore]
+        public virtual List<Advisor>? Advisors { get; set; }
+        [JsonIgnore]
+        public virtual List<LabLider>? LabLiders { get; set; }
 
         public virtual List<CourseInstitution>? CourseInstitution { get; set; }
     }
