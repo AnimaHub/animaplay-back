@@ -3,14 +3,16 @@ using System;
 using AnimaPlayBack.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AnimaPlayBack.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20220420190835_CreateAdvisor")]
+    partial class CreateAdvisor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,15 +156,15 @@ namespace AnimaPlayBack.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "e0fed8e2-08fc-4c7c-a740-e03cefe5ded5",
+                            ConcurrencyStamp = "0ab831c6-1dd5-4d6a-9de0-9d0de040a4ed",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEILWtmVaqcKidvYS69ytRUA28oqQ47gnp6Te98FRWA/LxmOIl9/mSMPb/TBmLy/DbQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEH1X5XkDsToGzfx96tkOdgdB2mmvmQgY/KjbOFgbS/b29rA1YPJg0bh0dQ342bEaxA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "372663b3-5046-4a8b-bc4f-7205e28c3aeb",
+                            SecurityStamp = "fa1e0904-2423-429b-aebf-dba8fd0b9677",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -182,70 +184,6 @@ namespace AnimaPlayBack.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Institutions");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.LabLider", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CustomIdentityUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InstitutionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("CustomIdentityUserId")
-                        .IsUnique();
-
-                    b.HasIndex("InstitutionId");
-
-                    b.ToTable("LabLiders");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.Partner", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("CustomIdentityUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Neighborhood")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomIdentityUserId")
-                        .IsUnique();
-
-                    b.ToTable("Partners");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Student", b =>
@@ -312,35 +250,35 @@ namespace AnimaPlayBack.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "195677f1-4478-4a8b-ba71-4ace2106c73e",
+                            ConcurrencyStamp = "6d3dbe5c-6987-4343-ac0c-4373829f05ee",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5d4e973b-b8ad-4f07-a849-8f9b0f1d3edc",
+                            ConcurrencyStamp = "660e4f93-ec3e-4383-a5a3-2aa8154862bb",
                             Name = "lablider",
                             NormalizedName = "LABLIDER"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "7ae8e1b7-5904-4ebc-bb8f-e6deca267e97",
+                            ConcurrencyStamp = "07937a42-946a-4552-8441-11fb3046ae84",
                             Name = "advisor",
                             NormalizedName = "ADVISOR"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "cad83173-8e0e-4389-a6e4-54142c4ae9a5",
+                            ConcurrencyStamp = "0bb14cbc-5fc7-4fd9-9578-501f851b360a",
                             Name = "student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = 5,
-                            ConcurrencyStamp = "d08208b4-d222-42ba-899f-73b15d105ac8",
+                            ConcurrencyStamp = "2076e36b-c86a-4531-b4b9-bbab93a5c8b2",
                             Name = "partner",
                             NormalizedName = "PARTNER"
                         });
@@ -496,42 +434,6 @@ namespace AnimaPlayBack.Migrations
                     b.Navigation("Institution");
                 });
 
-            modelBuilder.Entity("AnimaPlayBack.Entities.LabLider", b =>
-                {
-                    b.HasOne("AnimaPlayBack.Entities.Course", "Course")
-                        .WithMany("LabLiders")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("AnimaPlayBack.Entities.CustomIdentityUser", "CustomIdentityUser")
-                        .WithOne("LabLider")
-                        .HasForeignKey("AnimaPlayBack.Entities.LabLider", "CustomIdentityUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AnimaPlayBack.Entities.Institution", "Institution")
-                        .WithMany("LabLiders")
-                        .HasForeignKey("InstitutionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Course");
-
-                    b.Navigation("CustomIdentityUser");
-
-                    b.Navigation("Institution");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.Partner", b =>
-                {
-                    b.HasOne("AnimaPlayBack.Entities.CustomIdentityUser", "CustomIdentityUser")
-                        .WithOne("Partner")
-                        .HasForeignKey("AnimaPlayBack.Entities.Partner", "CustomIdentityUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CustomIdentityUser");
-                });
-
             modelBuilder.Entity("AnimaPlayBack.Entities.Student", b =>
                 {
                     b.HasOne("AnimaPlayBack.Entities.Course", "Course")
@@ -614,18 +516,12 @@ namespace AnimaPlayBack.Migrations
 
                     b.Navigation("CourseInstitution");
 
-                    b.Navigation("LabLiders");
-
                     b.Navigation("Students");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.CustomIdentityUser", b =>
                 {
                     b.Navigation("Advisor");
-
-                    b.Navigation("LabLider");
-
-                    b.Navigation("Partner");
 
                     b.Navigation("Student");
                 });
@@ -635,8 +531,6 @@ namespace AnimaPlayBack.Migrations
                     b.Navigation("Advisors");
 
                     b.Navigation("CourseInstitution");
-
-                    b.Navigation("LabLiders");
 
                     b.Navigation("Students");
                 });

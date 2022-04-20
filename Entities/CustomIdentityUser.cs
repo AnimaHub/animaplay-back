@@ -9,5 +9,11 @@ namespace AnimaPlayBack.Entities
 
         [JsonIgnore]
         public virtual Student? Student { get; set; }
+        [JsonIgnore]
+        public virtual Advisor? Advisor { get; set; }
+        [JsonIgnore]
+        public virtual LabLider? LabLider { get; set; }
+        [JsonIgnore]
+        public virtual Partner? Partner { get; internal set; }
     }
 }
