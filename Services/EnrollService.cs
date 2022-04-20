@@ -32,11 +32,29 @@ namespace AnimaPlayBack.Services
                 return Result.Fail($"There is already an account with the email: {dto.Email}");
             }
 
+            switch (dto.UserType) {
+                case UserTypeEnum.STUDENT:
+                    return EnrollStudent(dto);
+                case UserTypeEnum.ADMIN:
+                    return EnrollAdmin(dto);
+                //case UserTypeEnum.PARTNER:
+                //    return EnrollPartner(dto);
+                //case UserTypeEnum.ADVISOR:
+                //    return EnrollAdvisor(dto);
+                //case UserTypeEnum.LABLIDER:
+                //    return EnrollLabLider(dto);
+                    default: return Result.Fail("User type is not valid");
+            }
+        }
+
+        private Result EnrollAdmin(LoginDTO dto)
+        {
+
             var userRole = UserTypeExtensions.getUserString(dto.UserType);
 
-            if (userRole == "admin" || userRole == "undefined")
+            if (!(userRole == "admin"))
             {
-                return Result.Fail("the user role is not allowed");
+                return Result.Fail($"the user role: {userRole} is not allowed");
             }
 
             var user = this._mapper.Map<User>(dto);
@@ -61,26 +79,23 @@ namespace AnimaPlayBack.Services
 
                 return Result.Ok().WithSuccess(code);
             }
-            return Result.Fail("Fail enrolling an user");
+            return Result.Fail(GetFailResult(identityResult.Result.Errors));
         }
 
-        public Result EnrollStudent(StudentDTO dto)
+        private Result EnrollStudent(LoginDTO dto)
         {
-            if (IsEmailOnTheDataBase(dto.Email))
-            {
-                return Result.Fail($"There is already an account with the email: {dto.Email}");
-            }
+            var studentDTO = (StudentDTO) dto;
 
-            var userRole = UserTypeExtensions.getUserString(dto.UserType);
+            var userRole = UserTypeExtensions.getUserString(studentDTO.UserType);
 
             if (!(userRole == "student"))
             {
                 return Result.Fail($"the user role: {userRole} is not allowed on this api");
             }
 
-            var user = this._mapper.Map<User>(dto);
+            var user = this._mapper.Map<User>(studentDTO);
             var identityUser = this._mapper.Map<CustomIdentityUser>(user);
-            var identityResult = this._userManager.CreateAsync(identityUser, dto.Password);
+            var identityResult = this._userManager.CreateAsync(identityUser, studentDTO.Password);
 
             if (identityResult.Result.Succeeded)
             {
@@ -108,7 +123,7 @@ namespace AnimaPlayBack.Services
                 return Result.Ok().WithSuccess(code);
             }
 
-            return Result.Fail("Fail enrolling an user");
+            return Result.Fail(GetFailResult(identityResult.Result.Errors));
         }
 
         public Result ActivateUser(ActivateAccountRequest request)
@@ -127,10 +142,20 @@ namespace AnimaPlayBack.Services
 
             if (identityResult.Result.Succeeded)
             {
-                return Result.Ok();
+                return Result.Ok().WithSuccess("The account was activated with sucess");
             }
 
             return Result.Fail("Fail activating user account");
+        }
+
+        private string GetFailResult(IEnumerable<IdentityError> erros)
+        {
+            var errorMessage = "";
+            foreach (var error in erros)
+            {
+                errorMessage += $"{error.Code} {error.Description} ";
+            }
+            return errorMessage;
         }
 
         private bool IsEmailOnTheDataBase(string email)

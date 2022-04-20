@@ -15,18 +15,18 @@ namespace AnimaPlayBack.Controllers
         {
             this._service = service;
         }
-        [HttpPost]
-        public IActionResult Enroll([FromBody] LoginDTO dto)
+        [HttpPost("Admin")]
+        public IActionResult EnrollAdmin([FromBody] LoginDTO dto)
         {
             var result = this._service.Enroll(dto);
             if (result.IsFailed) return BadRequest(result.Errors);
             return Ok(result.Successes);
         }
 
-        [HttpPost("student")]
+        [HttpPost("Student")]
         public IActionResult EnrollStudent([FromBody] StudentDTO dto)
         {
-            var result = this._service.EnrollStudent(dto);
+            var result = this._service.Enroll(dto);
             if (result.IsFailed) return BadRequest(result.Errors);
             return Ok(result.Successes);
         }
