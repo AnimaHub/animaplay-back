@@ -132,12 +132,19 @@ namespace AnimaPlayBack.Data
                 .WithOne(ciu => ciu.Partner)
                 .HasForeignKey<Partner>(p => p.CustomIdentityUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Address>()
+                .HasOne(a => a.Partner)
+                .WithOne(p => p.Address)
+                .HasForeignKey<Address>(a => a.PartnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Advisor> Advisors { get; set; }
         public DbSet<LabLider> LabLiders { get; set; }
         public DbSet<Partner> Partners { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<CourseInstitution> CourseInstitution { get; set; }

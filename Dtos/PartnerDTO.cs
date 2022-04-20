@@ -5,24 +5,15 @@ namespace AnimaPlayBack.Dtos
 {
     public class PartnerDTO : LoginDTO
     {
-        public PartnerDTO(string username, int phonenumber, string email, string password, string repassword, DateTime birthDate, UserTypeEnum userType, string cep, string street, string neighborhood, string city, string state) : base(username, phonenumber, email, password, repassword, birthDate, userType)
+        public PartnerDTO(string username, int phonenumber, string email, string password, string repassword, DateTime birthDate, UserTypeEnum userType, string jobRole, AddressDTO address) : base(username, phonenumber, email, password, repassword, birthDate, userType)
         {
-            Cep = cep;
-            Street = street;
-            Neighborhood = neighborhood;
-            City = city;
-            State = state;
+            JobRole = jobRole;
+            Address = address;
         }
 
         [Required]
-        public string Cep { get; set; }
+        public string JobRole { get; set; }
         [Required]
-        public string Street { get; set; }
-        [Required]
-        public string Neighborhood { get; set; }
-        [Required]
-        public string City { get; set; }
-        [Required]
-        public string State { get; set; }
+        public AddressDTO Address { get; set; }
     }
 }

@@ -9,12 +9,9 @@ namespace AnimaPlayBack.Entities
         [Required]
         public int Id { get; set; }
         public int CustomIdentityUserId { get; set; }
+        public string JobRole { get; set; }
         [Required]
         public virtual CustomIdentityUser CustomIdentityUser { get; set; }
-        public string Cep { get; set; }
-        public string Street { get; set; }
-        public string Neighborhood { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
+        public virtual Address? Address { get; set; }
     }
 }
