@@ -1,5 +1,6 @@
 ﻿using MySql.Data;
 using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.Data;
 
@@ -7,8 +8,7 @@ namespace AnimaPlayBack.Controllers
 {
     public class DataBase
     {
-        private IConfiguration configuration;
-        private string connectionString = "server=localhost;user=root;password=#Mano1890;database=AnimaPlay";
+        private string connectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["AnimaConnectionLocal"];
         private MySqlConnection connection;
 
         public DataBase()
