@@ -3,14 +3,16 @@ using System;
 using AnimaPlayBack.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AnimaPlayBack.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20220420205457_CreateAddress")]
+    partial class CreateAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +53,7 @@ namespace AnimaPlayBack.Migrations
                     b.HasIndex("PartnerId")
                         .IsUnique();
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Address");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Advisor", b =>
@@ -191,15 +193,15 @@ namespace AnimaPlayBack.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "e8010b73-61a1-4cfe-9868-fd4b8ea3d82c",
+                            ConcurrencyStamp = "10418a38-3650-4780-a99f-2d08628ff03a",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKhEVSbIePgtdjTjvvZ4d4UJU2B6uo0CPD+6WEL7Mfce2oKUvdSXUsJchBUxeEu3lg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHpyZf+gwM5eFPWAupe5UaHOUuoSOpxEN+vXvZFP8CyJSHxRHee7OfKXzmRRNhZaOw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c112adcb-d98a-4594-bc87-c8876b5c7c22",
+                            SecurityStamp = "1eeb8f0f-fae3-4954-b413-63adf15d730b",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -256,10 +258,6 @@ namespace AnimaPlayBack.Migrations
 
                     b.Property<int>("CustomIdentityUserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("JobRole")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -333,35 +331,35 @@ namespace AnimaPlayBack.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "030d9ab6-377d-4aa5-985b-67483855882d",
+                            ConcurrencyStamp = "2a51fa47-5225-4500-b2cb-2b6b8e6768e1",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "33de58fd-9a35-40e7-90b3-3b2847f02c92",
+                            ConcurrencyStamp = "dda921d8-5235-4842-a5cf-003e909c7c34",
                             Name = "lablider",
                             NormalizedName = "LABLIDER"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "e9675c2b-5e76-41ab-9b4c-8b0cc07c1215",
+                            ConcurrencyStamp = "0b674d90-77a6-47ad-8645-ebd0cdfb67b3",
                             Name = "advisor",
                             NormalizedName = "ADVISOR"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "9d1a1194-09a9-4bd6-b7e6-e6e3091cdb37",
+                            ConcurrencyStamp = "2e1bc2a0-33c0-4c16-8f0c-ebde42b6dfa5",
                             Name = "student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = 5,
-                            ConcurrencyStamp = "dacac7b4-dba3-465b-9f0a-4eb2904492cb",
+                            ConcurrencyStamp = "6ea3e885-38c2-4192-8ee6-3aa3c40c0cff",
                             Name = "partner",
                             NormalizedName = "PARTNER"
                         });
