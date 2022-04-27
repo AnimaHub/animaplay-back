@@ -17,7 +17,7 @@ namespace AnimaPlayBack.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginRequest request)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
             var result = this._service.Login(request);
             if (result.IsFailed) return Unauthorized(result.Errors);
