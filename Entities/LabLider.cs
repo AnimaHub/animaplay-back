@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AnimaPlayBack.Entities
 {
@@ -16,5 +17,10 @@ namespace AnimaPlayBack.Entities
         [Required]
         public int CourseId { get; set; }
         public virtual Course Course { get; set; }
+        [JsonIgnore]
+        public virtual List<Project> Projects { get; set; }
+        [JsonIgnore]
+        public virtual List<ProjectLabLider> ProjectsLabLiders { get; set; }
+
     }
 }

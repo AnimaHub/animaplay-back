@@ -47,6 +47,7 @@ namespace AnimaPlayBack
             services.AddScoped<EnrollService, EnrollService>();
             services.AddScoped<TokenService, TokenService>();
             services.AddScoped<EmailService, EmailService>();
+            services.AddScoped<ProjectService, ProjectService>();
 
             services.AddAuthentication(auth =>
             {

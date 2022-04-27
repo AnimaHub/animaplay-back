@@ -127,6 +127,26 @@ namespace AnimaPlayBack.Data
                 .WithMany(i => i.CourseInstitution)
                 .HasForeignKey(ci => ci.InstitutionId);
 
+            builder.Entity<ProjectAdvisor>()
+                .HasOne(pa => pa.Advisor)
+                .WithMany(a => a.ProjectsAdvisors)
+                .HasForeignKey(pa => pa.AdvisorId);
+
+            builder.Entity<ProjectAdvisor>()
+                .HasOne(pa => pa.Project)
+                .WithMany(p => p.ProjectsAdvisors)
+                .HasForeignKey(pa => pa.ProjectId);
+
+            builder.Entity<ProjectLabLider>()
+                .HasOne(pl => pl.LabLider)
+                .WithMany(ll => ll.ProjectsLabLiders)
+                .HasForeignKey(pl => pl.LabLiderId);
+
+            builder.Entity<ProjectLabLider>()
+                .HasOne(pl => pl.Project)
+                .WithMany(p => p.ProjectsLabLiders)
+                .HasForeignKey(pa => pa.ProjectId);
+
             builder.Entity<Partner>()
                 .HasOne(p => p.CustomIdentityUser)
                 .WithOne(ciu => ciu.Partner)
@@ -148,5 +168,8 @@ namespace AnimaPlayBack.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<CourseInstitution> CourseInstitution { get; set; }
+        public DbSet<ProjectAdvisor> ProjectAdvisor { get; set; }
+        public DbSet<ProjectLabLider> ProjectLabLider { get; set; }
+        public DbSet<Project> Project { get; set; }
     }
 }
