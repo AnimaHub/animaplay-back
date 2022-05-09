@@ -5,6 +5,11 @@ namespace AnimaPlayBack.Entities
 {
     public class LabLider
     {
+        public LabLider()
+        {
+            this.LabLiderProject = new HashSet<LabLiderProject>();
+        }
+
         [Key]
         [Required]
         public int Id { get; set; }
@@ -18,9 +23,7 @@ namespace AnimaPlayBack.Entities
         public int CourseId { get; set; }
         public virtual Course Course { get; set; }
         [JsonIgnore]
-        public virtual List<Project> Projects { get; set; }
-        [JsonIgnore]
-        public virtual List<ProjectLabLider> ProjectsLabLiders { get; set; }
+        public virtual ICollection<LabLiderProject> LabLiderProject { get; set; }
 
     }
 }

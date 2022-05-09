@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AnimaPlayBack.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20220427200341_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220509174444_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,6 +81,27 @@ namespace AnimaPlayBack.Migrations
                     b.HasIndex("InstitutionId");
 
                     b.ToTable("Advisors");
+                });
+
+            modelBuilder.Entity("AnimaPlayBack.Entities.AdvisorProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvisorId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("AdvisorProject");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Course", b =>
@@ -193,15 +214,15 @@ namespace AnimaPlayBack.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "a0e0cb88-67e0-4ca5-8214-b6be52e659d1",
+                            ConcurrencyStamp = "6d8211fe-661e-4109-a734-d811509ac71d",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPL4iQX+/I8wKIclje+wUt1LCMIXUEdK1bU+MO9LlEOQOn+BAI926NQXdfVb/pFoxA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENuMt0pvgtAw5jROjYdZeW1yYiW7ypjNNSj+2iRV5qroktrF3tc4mtnlbgo2h/XEUA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "485b0d3c-cef2-48ce-b314-d8689707a649",
+                            SecurityStamp = "48daed66-dc2d-4be1-ac2f-873bae2923ca",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -250,6 +271,27 @@ namespace AnimaPlayBack.Migrations
                     b.ToTable("LabLiders");
                 });
 
+            modelBuilder.Entity("AnimaPlayBack.Entities.LabLiderProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("LabLiderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabLiderId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("LabLiderProject");
+                });
+
             modelBuilder.Entity("AnimaPlayBack.Entities.Partner", b =>
                 {
                     b.Property<int>("Id")
@@ -277,69 +319,17 @@ namespace AnimaPlayBack.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("AdvisorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
-                    b.Property<int?>("LabLiderId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AdvisorId");
-
-                    b.HasIndex("LabLiderId");
 
                     b.ToTable("Project");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.ProjectAdvisor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("AdvisorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdvisorId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectAdvisor");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.ProjectLabLider", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("LabLiderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LabLiderId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectLabLider");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Student", b =>
@@ -406,35 +396,35 @@ namespace AnimaPlayBack.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "4a8d6de9-fc3a-438c-81c4-34630539d2bf",
+                            ConcurrencyStamp = "41738ffe-c10b-4ac7-b8d3-9d00ac32a926",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "d37a27f0-f90d-42f0-8706-a11d26362dde",
+                            ConcurrencyStamp = "71637f47-2529-4e00-8616-2aaf579981d2",
                             Name = "lablider",
                             NormalizedName = "LABLIDER"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "211636ab-7035-47d9-a0ee-0b6e64f460f4",
+                            ConcurrencyStamp = "35c61443-9a2f-418f-8756-1f6eccc82161",
                             Name = "advisor",
                             NormalizedName = "ADVISOR"
                         },
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "62f29dd4-69ec-42bb-9525-fa7052e4980d",
+                            ConcurrencyStamp = "20310c31-fb12-4af4-a6ed-43a288afd4c3",
                             Name = "student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = 5,
-                            ConcurrencyStamp = "b948424c-53cd-4950-ae2d-1ffaca77c217",
+                            ConcurrencyStamp = "649c1fd9-8a46-4b1e-b80f-7f2f9b6c7b4e",
                             Name = "partner",
                             NormalizedName = "PARTNER"
                         });
@@ -582,6 +572,25 @@ namespace AnimaPlayBack.Migrations
                     b.Navigation("Institution");
                 });
 
+            modelBuilder.Entity("AnimaPlayBack.Entities.AdvisorProject", b =>
+                {
+                    b.HasOne("AnimaPlayBack.Entities.Advisor", "Advisor")
+                        .WithMany("AdvisorProject")
+                        .HasForeignKey("AdvisorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnimaPlayBack.Entities.Project", "Project")
+                        .WithMany("AdvisorProject")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advisor");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("AnimaPlayBack.Entities.CourseInstitution", b =>
                 {
                     b.HasOne("AnimaPlayBack.Entities.Course", "Course")
@@ -626,6 +635,25 @@ namespace AnimaPlayBack.Migrations
                     b.Navigation("Institution");
                 });
 
+            modelBuilder.Entity("AnimaPlayBack.Entities.LabLiderProject", b =>
+                {
+                    b.HasOne("AnimaPlayBack.Entities.LabLider", "LabLider")
+                        .WithMany("LabLiderProject")
+                        .HasForeignKey("LabLiderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AnimaPlayBack.Entities.Project", "Project")
+                        .WithMany("LabLiderProject")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabLider");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("AnimaPlayBack.Entities.Partner", b =>
                 {
                     b.HasOne("AnimaPlayBack.Entities.CustomIdentityUser", "CustomIdentityUser")
@@ -635,55 +663,6 @@ namespace AnimaPlayBack.Migrations
                         .IsRequired();
 
                     b.Navigation("CustomIdentityUser");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.Project", b =>
-                {
-                    b.HasOne("AnimaPlayBack.Entities.Advisor", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("AdvisorId");
-
-                    b.HasOne("AnimaPlayBack.Entities.LabLider", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("LabLiderId");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.ProjectAdvisor", b =>
-                {
-                    b.HasOne("AnimaPlayBack.Entities.Advisor", "Advisor")
-                        .WithMany("ProjectsAdvisors")
-                        .HasForeignKey("AdvisorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AnimaPlayBack.Entities.Project", "Project")
-                        .WithMany("ProjectsAdvisors")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Advisor");
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("AnimaPlayBack.Entities.ProjectLabLider", b =>
-                {
-                    b.HasOne("AnimaPlayBack.Entities.LabLider", "LabLider")
-                        .WithMany("ProjectsLabLiders")
-                        .HasForeignKey("LabLiderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AnimaPlayBack.Entities.Project", "Project")
-                        .WithMany("ProjectsLabLiders")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LabLider");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Student", b =>
@@ -764,9 +743,7 @@ namespace AnimaPlayBack.Migrations
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Advisor", b =>
                 {
-                    b.Navigation("Projects");
-
-                    b.Navigation("ProjectsAdvisors");
+                    b.Navigation("AdvisorProject");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Course", b =>
@@ -804,9 +781,7 @@ namespace AnimaPlayBack.Migrations
 
             modelBuilder.Entity("AnimaPlayBack.Entities.LabLider", b =>
                 {
-                    b.Navigation("Projects");
-
-                    b.Navigation("ProjectsLabLiders");
+                    b.Navigation("LabLiderProject");
                 });
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Partner", b =>
@@ -816,9 +791,9 @@ namespace AnimaPlayBack.Migrations
 
             modelBuilder.Entity("AnimaPlayBack.Entities.Project", b =>
                 {
-                    b.Navigation("ProjectsAdvisors");
+                    b.Navigation("AdvisorProject");
 
-                    b.Navigation("ProjectsLabLiders");
+                    b.Navigation("LabLiderProject");
                 });
 #pragma warning restore 612, 618
         }

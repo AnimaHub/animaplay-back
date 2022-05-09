@@ -12,6 +12,18 @@ namespace AnimaPlayBack.Data
 
         }
 
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Advisor> Advisors { get; set; }
+        public DbSet<LabLider> LabLiders { get; set; }
+        public DbSet<Partner> Partners { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Institution> Institutions { get; set; }
+        public DbSet<CourseInstitution> CourseInstitution { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<AdvisorProject> AdvisorProject { get; set; }
+        public DbSet<LabLiderProject> LabLiderProject { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -127,25 +139,25 @@ namespace AnimaPlayBack.Data
                 .WithMany(i => i.CourseInstitution)
                 .HasForeignKey(ci => ci.InstitutionId);
 
-            builder.Entity<ProjectAdvisor>()
-                .HasOne(pa => pa.Advisor)
-                .WithMany(a => a.ProjectsAdvisors)
-                .HasForeignKey(pa => pa.AdvisorId);
+            builder.Entity<LabLiderProject>()
+                .HasOne(llp => llp.Project)
+                .WithMany(p => p.LabLiderProject)
+                .HasForeignKey(llp => llp.ProjectId);
 
-            builder.Entity<ProjectAdvisor>()
-                .HasOne(pa => pa.Project)
-                .WithMany(p => p.ProjectsAdvisors)
-                .HasForeignKey(pa => pa.ProjectId);
+            builder.Entity<LabLiderProject>()
+                .HasOne(llp => llp.LabLider)
+                .WithMany(ll => ll.LabLiderProject)
+                .HasForeignKey(llp => llp.LabLiderId);
 
-            builder.Entity<ProjectLabLider>()
-                .HasOne(pl => pl.LabLider)
-                .WithMany(ll => ll.ProjectsLabLiders)
-                .HasForeignKey(pl => pl.LabLiderId);
+            builder.Entity<AdvisorProject>()
+                .HasOne(ap => ap.Project)
+                .WithMany(p => p.AdvisorProject)
+                .HasForeignKey(ap => ap.ProjectId);
 
-            builder.Entity<ProjectLabLider>()
-                .HasOne(pl => pl.Project)
-                .WithMany(p => p.ProjectsLabLiders)
-                .HasForeignKey(pa => pa.ProjectId);
+            builder.Entity<AdvisorProject>()
+                .HasOne(ap => ap.Advisor)
+                .WithMany(a => a.AdvisorProject)
+                .HasForeignKey(a => a.AdvisorId);
 
             builder.Entity<Partner>()
                 .HasOne(p => p.CustomIdentityUser)
@@ -160,16 +172,5 @@ namespace AnimaPlayBack.Data
                 .OnDelete(DeleteBehavior.Restrict);
         }
 
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Advisor> Advisors { get; set; }
-        public DbSet<LabLider> LabLiders { get; set; }
-        public DbSet<Partner> Partners { get; set; }
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Institution> Institutions { get; set; }
-        public DbSet<CourseInstitution> CourseInstitution { get; set; }
-        public DbSet<ProjectAdvisor> ProjectAdvisor { get; set; }
-        public DbSet<ProjectLabLider> ProjectLabLider { get; set; }
-        public DbSet<Project> Project { get; set; }
     }
 }
