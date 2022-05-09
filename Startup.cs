@@ -33,7 +33,7 @@ namespace AnimaPlayBack
             {
                 options
                 .UseLazyLoadingProxies()
-                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionLocal"));
+                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
             });
 
             services.AddIdentity<CustomIdentityUser, IdentityRole<int>>(
@@ -47,6 +47,7 @@ namespace AnimaPlayBack
             services.AddScoped<EnrollService, EnrollService>();
             services.AddScoped<TokenService, TokenService>();
             services.AddScoped<EmailService, EmailService>();
+            services.AddScoped<ProjectService, ProjectService>();
 
             services.AddAuthentication(auth =>
             {

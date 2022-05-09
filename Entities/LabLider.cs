@@ -1,9 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AnimaPlayBack.Entities
 {
     public class LabLider
     {
+        public LabLider()
+        {
+            this.LabLiderProject = new HashSet<LabLiderProject>();
+        }
+
         [Key]
         [Required]
         public int Id { get; set; }
@@ -16,5 +22,8 @@ namespace AnimaPlayBack.Entities
         [Required]
         public int CourseId { get; set; }
         public virtual Course Course { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<LabLiderProject> LabLiderProject { get; set; }
+
     }
 }

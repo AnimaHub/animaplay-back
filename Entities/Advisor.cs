@@ -1,9 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AnimaPlayBack.Entities
 {
     public class Advisor
     {
+        public Advisor()
+        {
+            this.AdvisorProject = new HashSet<AdvisorProject>();
+        }
+
         [Key]
         [Required]
         public int Id { get; set; }
@@ -16,5 +22,8 @@ namespace AnimaPlayBack.Entities
         [Required]
         public int CourseId { get; set; }
         public virtual Course Course { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<AdvisorProject> AdvisorProject { get; set; }
+
     }
 }
