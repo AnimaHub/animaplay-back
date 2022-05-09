@@ -27,8 +27,5 @@ namespace AnimaPlayBack.Dtos
         public int Ra { get; set; }
         public CourseDTO? Course { get; set; }
         public StudentType StudentType { get; set; }
-
-        [JsonIgnore]
-        public Address? Address { get; set; }
     }
 }
