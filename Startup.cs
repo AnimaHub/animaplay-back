@@ -33,7 +33,7 @@ namespace AnimaPlayBack
             {
                 options
                 .UseLazyLoadingProxies()
-                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionLocal"));
+                .UseMySQL(Configuration.GetConnectionString("AnimaConnectionRemote"));
             });
 
             services.AddIdentity<CustomIdentityUser, IdentityRole<int>>(

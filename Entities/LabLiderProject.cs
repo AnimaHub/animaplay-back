@@ -2,14 +2,14 @@
 
 namespace AnimaPlayBack.Entities
 {
-    public class ProjectAdvisor
+    public class LabLiderProject
     {
         [Key]
         [Required]
         public int Id { get; set; }
+        public int LabLiderId { get; set; }
+        public virtual LabLider LabLider { get; set; }
         public int ProjectId { get; set; }
         public virtual Project Project { get; set; }
-        public int AdvisorId { get; set; }
-        public virtual Advisor Advisor { get; set; }
     }
 }

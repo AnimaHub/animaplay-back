@@ -4,7 +4,7 @@ using MySql.EntityFrameworkCore.Metadata;
 
 namespace AnimaPlayBack.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -74,6 +74,20 @@ namespace AnimaPlayBack.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Institutions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Project",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Project", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -354,53 +368,25 @@ namespace AnimaPlayBack.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
+                name: "AdvisorProject",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
-                    Image = table.Column<string>(type: "text", nullable: true),
-                    AdvisorId = table.Column<int>(type: "int", nullable: true),
-                    LabLiderId = table.Column<int>(type: "int", nullable: true)
+                    AdvisorId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.PrimaryKey("PK_AdvisorProject", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Project_Advisors_AdvisorId",
-                        column: x => x.AdvisorId,
-                        principalTable: "Advisors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Project_LabLiders_LabLiderId",
-                        column: x => x.LabLiderId,
-                        principalTable: "LabLiders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProjectAdvisor",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    AdvisorId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectAdvisor", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProjectAdvisor_Advisors_AdvisorId",
+                        name: "FK_AdvisorProject_Advisors_AdvisorId",
                         column: x => x.AdvisorId,
                         principalTable: "Advisors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectAdvisor_Project_ProjectId",
+                        name: "FK_AdvisorProject_Project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
@@ -408,25 +394,25 @@ namespace AnimaPlayBack.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectLabLider",
+                name: "LabLiderProject",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    LabLiderId = table.Column<int>(type: "int", nullable: false)
+                    LabLiderId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectLabLider", x => x.Id);
+                    table.PrimaryKey("PK_LabLiderProject", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectLabLider_LabLiders_LabLiderId",
+                        name: "FK_LabLiderProject_LabLiders_LabLiderId",
                         column: x => x.LabLiderId,
                         principalTable: "LabLiders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectLabLider_Project_ProjectId",
+                        name: "FK_LabLiderProject_Project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
@@ -438,17 +424,17 @@ namespace AnimaPlayBack.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "4a8d6de9-fc3a-438c-81c4-34630539d2bf", "admin", "ADMIN" },
-                    { 2, "d37a27f0-f90d-42f0-8706-a11d26362dde", "lablider", "LABLIDER" },
-                    { 3, "211636ab-7035-47d9-a0ee-0b6e64f460f4", "advisor", "ADVISOR" },
-                    { 4, "62f29dd4-69ec-42bb-9525-fa7052e4980d", "student", "STUDENT" },
-                    { 5, "b948424c-53cd-4950-ae2d-1ffaca77c217", "partner", "PARTNER" }
+                    { 1, "41738ffe-c10b-4ac7-b8d3-9d00ac32a926", "admin", "ADMIN" },
+                    { 2, "71637f47-2529-4e00-8616-2aaf579981d2", "lablider", "LABLIDER" },
+                    { 3, "35c61443-9a2f-418f-8756-1f6eccc82161", "advisor", "ADVISOR" },
+                    { 4, "20310c31-fb12-4af4-a6ed-43a288afd4c3", "student", "STUDENT" },
+                    { 5, "649c1fd9-8a46-4b1e-b80f-7f2f9b6c7b4e", "partner", "PARTNER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDate", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "a0e0cb88-67e0-4ca5-8214-b6be52e659d1", "admin@admin.com", true, false, null, "ADMIN@ADMIN.COM", "ADMIN", "AQAAAAEAACcQAAAAEPL4iQX+/I8wKIclje+wUt1LCMIXUEdK1bU+MO9LlEOQOn+BAI926NQXdfVb/pFoxA==", null, false, "485b0d3c-cef2-48ce-b314-d8689707a649", false, "admin" });
+                values: new object[] { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "6d8211fe-661e-4109-a734-d811509ac71d", "admin@admin.com", true, false, null, "ADMIN@ADMIN.COM", "ADMIN", "AQAAAAEAACcQAAAAENuMt0pvgtAw5jROjYdZeW1yYiW7ypjNNSj+2iRV5qroktrF3tc4mtnlbgo2h/XEUA==", null, false, "48daed66-dc2d-4be1-ac2f-873bae2923ca", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -460,6 +446,16 @@ namespace AnimaPlayBack.Migrations
                 table: "Addresses",
                 column: "PartnerId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AdvisorProject_AdvisorId",
+                table: "AdvisorProject",
+                column: "AdvisorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AdvisorProject_ProjectId",
+                table: "AdvisorProject",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Advisors_CourseId",
@@ -525,6 +521,16 @@ namespace AnimaPlayBack.Migrations
                 column: "InstitutionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LabLiderProject_LabLiderId",
+                table: "LabLiderProject",
+                column: "LabLiderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabLiderProject_ProjectId",
+                table: "LabLiderProject",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LabLiders_CourseId",
                 table: "LabLiders",
                 column: "CourseId");
@@ -545,36 +551,6 @@ namespace AnimaPlayBack.Migrations
                 table: "Partners",
                 column: "CustomIdentityUserId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Project_AdvisorId",
-                table: "Project",
-                column: "AdvisorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Project_LabLiderId",
-                table: "Project",
-                column: "LabLiderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectAdvisor_AdvisorId",
-                table: "ProjectAdvisor",
-                column: "AdvisorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectAdvisor_ProjectId",
-                table: "ProjectAdvisor",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectLabLider_LabLiderId",
-                table: "ProjectLabLider",
-                column: "LabLiderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectLabLider_ProjectId",
-                table: "ProjectLabLider",
-                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_CourseId",
@@ -599,6 +575,9 @@ namespace AnimaPlayBack.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
+                name: "AdvisorProject");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -617,10 +596,7 @@ namespace AnimaPlayBack.Migrations
                 name: "CourseInstitution");
 
             migrationBuilder.DropTable(
-                name: "ProjectAdvisor");
-
-            migrationBuilder.DropTable(
-                name: "ProjectLabLider");
+                name: "LabLiderProject");
 
             migrationBuilder.DropTable(
                 name: "Students");
@@ -629,16 +605,16 @@ namespace AnimaPlayBack.Migrations
                 name: "Partners");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Project");
-
-            migrationBuilder.DropTable(
                 name: "Advisors");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "LabLiders");
+
+            migrationBuilder.DropTable(
+                name: "Project");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

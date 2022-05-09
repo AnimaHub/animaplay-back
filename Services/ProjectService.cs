@@ -62,14 +62,19 @@ namespace AnimaPlayBack.Services
             var project = this._mapper.Map<Project>(dto);
             try
             {
-                var projectAdvisors = new List<ProjectAdvisor>();
+                if (dto.Advisors == null)
+                {
+                    throw new Exception("Advisors are null");
+                }
+
+                var projectAdvisors = new List<AdvisorProject>();
                 var advisors = new List<Advisor>();
                 foreach (var advisor in dto.Advisors)
                 {
                     var dbAdvisor = this._context.Advisors.FirstOrDefault(a => a.CustomIdentityUser.NormalizedUserName == advisor.Name.ToUpper());
                     if (dbAdvisor != null)
                     {
-                        var projectAdvisor = new ProjectAdvisor()
+                        var projectAdvisor = new AdvisorProject()
                         {
                             Advisor = dbAdvisor,
                             Project = project
